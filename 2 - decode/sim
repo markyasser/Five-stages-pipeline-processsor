@@ -1,0 +1,20 @@
+vlog control_unit.v
+vsim work.control_unit
+add wave -position insertpoint sim:/control_unit/*
+
+ 
+force -freeze sim:/control_unit/opcode 001 0
+run
+
+force -freeze sim:/control_unit/opcode 010 0
+run
+
+force -freeze sim:/control_unit/opcode 011 0
+run
+
+force -freeze sim:/control_unit/opcode 100 0
+run
+
+force -freeze sim:/control_unit/opcode 101 0
+run
+
