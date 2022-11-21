@@ -1,4 +1,4 @@
-module DataMemory (address, writeData, readData, read, write, CS);
+module DataMemory (address, writeData, readData, read, write, CS, clk);
 // Address of data
 input [31:0] address;
 input [15:0] writeData;
@@ -9,19 +9,23 @@ input read;
 input write;
 // Chip select (enable)
 input CS;
+// Clock
+input clk;
 // 16 bit word, 4KB memory
 // The data memory starts with the data area (the very first address space and down)
 // Followed by the stack area (starting from [2^11−1 and up])
 reg [15:0] dataMem [0:(2 ** 11 - 1)];
 // Register holding the output data of the selected address
 // data wire is always connected to dataOut reg
-always @(*) begin
+always @(posedge clk) begin
     // Write
 	if(CS && write && !read)
 	begin
 		dataMem[address[10:0]] = writeData; 
 	end
-    // Read
+end
+always @(CS or address or read) begin
+	// Read
 	if(CS && !write && read)
 	begin
 		readData = dataMem[address[10:0]];  
