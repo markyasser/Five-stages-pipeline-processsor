@@ -15,8 +15,7 @@ input clk;
 // The data memory starts with the data area (the very first address space and down)
 // Followed by the stack area (starting from [2^11−1 and up])
 reg [15:0] dataMem [0:(2 ** 11 - 1)];
-// Register holding the output data of the selected address
-// data wire is always connected to dataOut reg
+
 always @(posedge clk) begin
     // Write
 	if(CS && write && !read)
