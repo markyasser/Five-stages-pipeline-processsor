@@ -1,21 +1,21 @@
-// a mux to set PC value 
-module mux21(Addition, jump, S, Y);
-output [31:0] Y;
-input [31:0] jump, Addition;
-input S;
+// // a mux to set PC value 
+// module mux21(Addition, jump, S, Y);
+// output [31:0] Y;
+// input [31:0] jump, Addition;
+// input S;
 
-always @(Addition or jump)
-    begin
-        case(S)
-            0: // Addition
-            Y <= Addition;
-            1: // jump
-            Y <= jump ;
-        endcase
-    end
+// always @(Addition or jump)
+//     begin
+//         case(S)
+//             0: // Addition
+//             Y <= Addition;
+//             1: // jump
+//             Y <= jump ;
+//         endcase
+//     end
 
-// assign Y=(S) ? jump : Addition;
-endmodule
+// // assign Y=(S) ? jump : Addition;
+// endmodule
 
 module FetchStage (
     intRegAddress,
@@ -42,21 +42,23 @@ output reg [4:0] opCode;
 // TODO: make a mux and set PC value from MUX
 // TODO: make ALU to inrement PC by 1 ---> OR 2 ?
 reg [31:0] PC;
-always @(PC)
-    begin
-    	nextInstructionAddress <= PC + 32'h00000001;
-    end
+reg [15:0] writeData;
+// always @(PC)
+//     begin
+//     	nextInstructionAddress <= PC + 32'h00000001;
+//     end
 
 reg CS;
+wire [15:0] dataFromMemoryWire;
 
 // Instruction memory
-InstructionMemory mem(PC, Rsrc_value, dataFromMemoryWire, 1, 0, CS, clk);
+InstructionMemory mem(PC, writeData, dataFromMemoryWire, 1, 0, CS, clk);
 always @(posedge clk) begin
     // Pass data to IF/ID buffer
     // TODO: get it from ALU
     
     PC = nextInstructionAddress;
-    // nextInstructionAddress = 0;
+    nextInstructionAddress <= PC + 32'h1;
     // CS always 1
     CS = 1;
     isImmediate = dataFromMemoryWire[0];
