@@ -1,7 +1,8 @@
 // ALU module
-module ALU(Src,Dst,ALU_ADD,ALU_NOT,ALU_Result,CCR);
+module ALU(Src,Dst,ALU_ADD,ALU_NOT,ALU_Result,CCR,clk);
     input [15:0] Src,Dst;  // ALU 16-bit Inputs                 
     input ALU_ADD,ALU_NOT;// ALU Selection
+    input clk;
     output reg [15:0] ALU_Result; // ALU 16-bit Output
     output [2:0] CCR; // flags register
     //wires
@@ -15,22 +16,24 @@ module ALU(Src,Dst,ALU_ADD,ALU_NOT,ALU_Result,CCR);
     assign tmp = {1'b0,Src} + {1'b0,Dst};
 
 
-    //ALU Result
-    assign ALU_Result = 
-    (control_Bits == 2'b01)? Src + Dst: // Addition    
-    (control_Bits == 2'b10)? ~(Src): Dst; // NOT    
+    
+    // assign ALU_Result = 
+    // (control_Bits == 2'b01)? Src + Dst: // Addition    
+    // (control_Bits == 2'b10)? ~(Src): Dst; // NOT    
     
 
-    
-    // always @(control_Bits,Src,Dst)
-    // begin
-    //     case(control_Bits)
-    //     2'b01: // Addition
-    //     ALU_Result <= Src + Dst ;
-    //     2'b10: // NOT
-    //     ALU_Result <= ~(Src) ;
-    //     endcase
-    // end
+    //ALU Result
+    always @(posedge clk)
+    begin
+        case(control_Bits)
+        2'b01: // Addition
+        ALU_Result <= Src + Dst ;
+        2'b10: // NOT
+        ALU_Result <= ~(Src) ;
+        default:
+        ALU_Result <= Dst ;
+        endcase
+    end
 
     // Assigning Flags
     assign ZeroFlag = (ALU_Result == 0) ? 1 : 0;
