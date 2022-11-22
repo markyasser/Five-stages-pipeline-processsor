@@ -46,7 +46,7 @@ wire sp_pop;
 wire [1:0] selAddress;
 wire [15:0] address;
 wire pushOrPop;
-wire dataFromMemoryWire;
+wire [15:0] dataFromMemoryWire;
 assign isMemory = memRead | memWrite;
 assign selPushOrPop = {push, pop};
 // Mux to make the signal 0 if push, 1 if pop, else z
