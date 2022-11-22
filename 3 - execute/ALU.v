@@ -4,9 +4,9 @@ module ALU(Src,Dst,ALU_ADD,ALU_NOT,ALU_Result,CCR,clk);
     input ALU_ADD,ALU_NOT;// ALU Selection
     input clk;
     output reg [15:0] ALU_Result; // ALU 16-bit Output
-    output [2:0] CCR; // flags register
+    output reg [2:0] CCR; // flags register
     //wires
-    wire ZeroFlag,NegativeFlag,OverflowFlag;
+    // reg ZeroFlag,NegativeFlag,OverflowFlag;
     wire [1:0] control_Bits;
     //The Operations
     assign control_Bits[0] = ALU_ADD;
@@ -33,15 +33,22 @@ module ALU(Src,Dst,ALU_ADD,ALU_NOT,ALU_Result,CCR,clk);
         default:
         ALU_Result <= Dst ;
         endcase
+       
     end
-
-    // Assigning Flags
-    assign ZeroFlag = (ALU_Result == 0) ? 1 : 0;
-    assign NegativeFlag = (ALU_Result[15] == 1) ? 1 : 0;
-    assign OverflowFlag = (control_Bits == 1 && Src[15]==Dst[15] && Src[15] != tmp[15]) ? 1 : 0;
-    // Flag Register
-    assign CCR[0] = ZeroFlag;
-    assign CCR[1] = NegativeFlag;
-    assign CCR[2] = OverflowFlag;
+    always @(negedge clk)
+    begin
+         // Flag Register
+        CCR[0] = (ALU_Result == 0) ? 1 : 0;
+        CCR[1] = (ALU_Result[15] == 1) ? 1 : 0;
+        CCR[2] = (control_Bits == 1 && Src[15]==Dst[15] && Src[15] != tmp[15]) ? 1 : 0;
+    end
+    // // Assigning Flags
+    // assign ZeroFlag = (ALU_Result == 0) ? 1 : 0;
+    // assign NegativeFlag = (ALU_Result[15] == 1) ? 1 : 0;
+    // assign OverflowFlag = (control_Bits == 1 && Src[15]==Dst[15] && Src[15] != tmp[15]) ? 1 : 0;
+    // // Flag Register
+    // assign CCR[0] = ZeroFlag;
+    // assign CCR[1] = NegativeFlag;
+    // assign CCR[2] = OverflowFlag;
 
 endmodule
