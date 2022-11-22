@@ -21,6 +21,7 @@ output reg [2:0] Rd;
 output reg [2:0] Rs;
 output reg [4:0] opCode;
 // TODO: make a mux and set PC value from MUX
+// TODO: make ALU to inrement PC by 1
 reg PC;
 reg CS;
 // Instruction memory
