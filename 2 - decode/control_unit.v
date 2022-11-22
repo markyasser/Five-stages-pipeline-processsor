@@ -1,7 +1,7 @@
-module control_unit(opcode);
+module control_unit(opcode,control_signals);
     input [4:0] opcode; // 5 bit op code coming from the 16 bit instruction
 
-    wire [7:0] control_signals; //assuming 8 bit control signal
+    output [7:0] control_signals; //assuming 8 bit control signal
     /*
     control signals :
     not = control_signals[0]
