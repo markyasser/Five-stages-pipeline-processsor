@@ -11,17 +11,17 @@ module RegFile #(parameter N=16) (write_enable, read_addr_1,read_addr_2,read_dat
   integer i;
   always @ (negedge clk) //read at the -ve edge
   begin
-    read_data_1 = regFile[read_addr_1];
-    read_data_2 = regFile[read_addr_2];
+    read_data_1 <= regFile[read_addr_1];
+    read_data_2 <= regFile[read_addr_2];
   end
   
   always @ (posedge clk) //write at the +ve edge
   begin
     if(rstAll)
     begin //write 0 in all registers
-      for ( i= 0;i<8 ;i=i+1 )
+      for ( i= 0; i<8; i=i+1 )
       begin
-        regFile[i]=0;
+        regFile[i] = 0;
       end
     end
     else if(rst)
