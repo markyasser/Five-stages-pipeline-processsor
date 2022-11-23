@@ -18,10 +18,10 @@ input clk;
 reg [15:0] instMemory [0:(2 ** 20 - 1)];
 initial begin
 	instMemory[2 ** 5] = 16'b00011_001_010_00000;
-	instMemory[2 ** 5 + 1] = 16'b00100_001_010_00000;
-	instMemory[2 ** 5 + 2] = 16'b00010_001_010_00000;
+	instMemory[2 ** 5 + 1] = 16'b00100_100_011_00000;
+	instMemory[2 ** 5 + 2] = 16'b00010_110_101_00000;
 	instMemory[2 ** 5 + 3] = 16'b00100_001_010_00000;
-	instMemory[2 ** 5 + 4] = 16'b00101_001_010_00000;
+	instMemory[2 ** 5 + 4] = 16'b00101_000_001_00000;
 end
 always @(posedge clk) begin
     // Write

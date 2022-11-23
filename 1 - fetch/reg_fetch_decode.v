@@ -14,7 +14,7 @@ module reg_fetch_decode(
 );
     reg [47:0] register;
 
-    always @ (negedge clk) // read at the +ve edge
+    always @ (negedge clk) // write at the -ve edge
     begin
         register[31:0] <= Next_inst_addr;
         register[36:32] <= opcode;
@@ -23,7 +23,7 @@ module reg_fetch_decode(
         register[47:43] <= shmnt;
     end
 
-    always @ (posedge clk) // write at the -ve edge
+    always @ (posedge clk) // read at the +ve edge
     begin
         Next_inst_addr_decode = register[31:0];
         opcode_decode =  register[36:32];

@@ -5,21 +5,31 @@ add wave -position insertpoint  \
 sim:/Processor/clk
 
 add wave -position insertpoint  \
-sim:/Processor/Rs_data
-add wave -position insertpoint  \
-sim:/Processor/Rd_data
+sim:/Processor/registers/regFile
+
 
 
 
 # cycle 1 
 add wave -position insertpoint  \
 sim:/Processor/Fetch/PC
+add wave -position insertpoint  \
+sim:/Processor/Rd \
+sim:/Processor/Rs \
+sim:/Processor/opCode
 
 # cycle 2 
+add wave -position insertpoint  \
+sim:/Processor/Rs_data
+add wave -position insertpoint  \
+sim:/Processor/Rd_data
 add wave -position insertpoint  \
 sim:/Processor/control_signals
 
 # cycle 3 
+add wave -position insertpoint  \
+sim:/Processor/Rs_data_execute \
+sim:/Processor/Rd_data_execute
 add wave -position insertpoint  \
 sim:/Processor/control_signals_execute
 add wave -position insertpoint  \
@@ -32,24 +42,31 @@ sim:/Processor/ALU_result_mem
 
 # cycle 5
 add wave -position insertpoint  \
+sim:/Processor/Rs_data_mem \
+sim:/Processor/Rd_data_mem
+add wave -position insertpoint  \
 sim:/Processor/memory_stage/mem/dataMem
 add wave -position insertpoint  \
 sim:/Processor/memory_stage/mem/writeData
 add wave -position insertpoint  \
 sim:/Processor/memory_stage/mem/address
+add wave -position insertpoint  \
+sim:/Processor/memWrite_mem
+add wave -position insertpoint  \
+sim:/Processor/memRead_mem
+add wave -position insertpoint  \
+sim:/Processor/memory_stage/mem/CS
 
 
-
-
-force -freeze sim:/Processor/Fetch/PC 32'b00100000 0
+#force -freeze sim:/Processor/Fetch/PC 32'b00100000 0
 force -freeze sim:/Processor/clk 1 0, 0 {25 ps} -r 50
 
 
-force -freeze sim:/Processor/Decode/Rs_data 0000000000000111 0
-force -freeze sim:/Processor/Decode/Rd_data 0000000000010110 0
+#force -freeze sim:/Processor/Decode/Rs_data 0000000000000111 0
+#force -freeze sim:/Processor/Decode/Rd_data 0000000000010110 0
 run
 
-noforce sim:/Processor/Fetch/PC
+#noforce sim:/Processor/Fetch/PC
 
 run 
 run 

@@ -8,6 +8,20 @@ module RegFile #(parameter N=16) (write_enable, read_addr_1,read_addr_2,read_dat
   //if you want to read and write data from the same register you will get the old value if you read it before writing it
   //so wrting must be in the first half cycle and reading in the second half cycle
   //if our clk starts with 1 write will be  at the positive edge and read at the negative edge
+  
+  //--------for testing only---------
+  initial begin
+    regFile[0] = 16'd0;
+    regFile[1] = 16'd1;
+    regFile[2] = 26'd2;
+    regFile[3] = 16'd3;
+    regFile[4] = 16'd4;
+    regFile[5] = 16'd5;
+    regFile[6] = 16'd6;
+    regFile[7] = 16'd7;
+  end
+  //---------------------------------
+  
   integer i;
   always @ (negedge clk) //read at the -ve edge
   begin

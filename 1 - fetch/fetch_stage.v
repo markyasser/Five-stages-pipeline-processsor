@@ -51,6 +51,13 @@ reg [15:0] writeData;
 reg CS;
 wire [15:0] dataFromMemoryWire;
 
+
+// ----------------for testing--------------------
+initial begin
+    nextInstructionAddress = 32'b00100000;
+end
+// -----------------------------------------------
+
 // Instruction memory
 InstructionMemory mem(PC, writeData, dataFromMemoryWire, 1'b1, 1'b0, CS, clk);
 always @(posedge clk) begin

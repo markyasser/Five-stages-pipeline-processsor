@@ -19,7 +19,7 @@ module ALU(Src,Dst,ALU_ADD,ALU_NOT,ALU_Result,CCR,clk);
     
     assign ALU_Result = 
     (control_Bits == 2'b01)? Src + Dst: // Addition    
-    (control_Bits == 2'b10)? ~(Src): 16'bx; // NOT    
+    (control_Bits == 2'b10)? ~(Dst): 16'bx; // NOT    
     
 
     //ALU Result

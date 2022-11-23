@@ -15,7 +15,7 @@ output [7:0] control_signals
 );
 
 control_unit CU(opCode,control_signals);
-RegFile registers(write_enable,Rs,Rd,Rs_data,Rd_data,WB_data,clk,rst,rstAll,WB_address);
+RegFile registers(write_enable,Rs,Rd,Rs_data,Rd_data,WB_data,clk,rst,rstAll,WB_address); 
 
 
 endmodule

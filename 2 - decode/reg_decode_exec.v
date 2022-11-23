@@ -17,7 +17,12 @@ module reg_decode_exec(
 );
     reg [63:0] register;
 
-    always @ (negedge clk) // read at the +ve edge
+    // always @(Rs_data,Rd_data) begin
+    //     register[26:11] <= Rd_data;
+    //     register[42:27] <= Rs_data;
+    // end
+
+    always @ (negedge clk,Rs_data,Rd_data) // read at the +ve edge
     begin
         register[7:0] <= control_signals;
         register[10:8] <= Rd;

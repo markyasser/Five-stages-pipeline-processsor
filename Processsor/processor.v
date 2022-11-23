@@ -14,6 +14,8 @@
 `include "../4 - memory/reg_mem_wb.v"
 `include "../4 - memory/data_memory.v"
 
+`include "../5 - write back/write_back.v"
+
 module Processor (
     input clk
 );
@@ -40,15 +42,17 @@ module Processor (
     Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode);
 
     // decode stage
-    reg  [15:0] WB_data;
-    reg  [2:0] WB_address;
-    reg write_enable;
+    //reg  [15:0] WB_data; //defined in write back (down)
+    //reg  [2:0] WB_address; //from in memory / write back registers(down)
+    //reg regWrite_WB;
     reg rst;
     reg rstAll;
     wire [15:0] Rs_data;
     wire [15:0] Rd_data;
     wire [7:0] control_signals;
-    instruction_decode Decode(clk,opcode_decode,Rs_decode,Rd_decode,WB_data,WB_address,write_enable,rst,rstAll,Rs_data,Rd_data,control_signals);
+    control_unit CU(opcode_decode,control_signals);
+    RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,rstAll,WB_address); 
+    //instruction_decode Decode(clk,opcode_decode,Rs_decode,Rd_decode,WB_data,WB_address,write_enable,rst,rstAll,Rs_data,Rd_data,control_signals);
     
     // register between decode and execute
     wire [15:0]Imm_value_execute;
@@ -57,8 +61,8 @@ module Processor (
     wire [15:0]Rd_data_execute;
     wire [2:0] Rd_execute;
     wire [7:0] control_signals_execute;
-    reg_decode_exec reg_dec_exec(clk,{opcode_decode,Rs_decode,Rd_decode,shmnt_decode},shmnt_decode,
-    Rs_data,Rd_data,Rd_decode,control_signals,Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute);
+    reg_decode_exec reg_dec_exec(clk,{opcode_decode,Rs_decode,Rd_decode,shmnt_decode},shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,
+    Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute);
 
     // execute stage
     wire [15:0] ALU_Result; // ALU 16-bit Output
@@ -74,7 +78,8 @@ module Processor (
     wire  memRead_mem;
     wire  memWrite_mem;
     wire  regWrite_mem;
-    reg_exec_mem reg_exec_mem(clk,ALU_Result,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute[2],control_signals_execute[3],control_signals_execute[4],ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem);
+    reg_exec_mem reg_exec_mem(clk,ALU_Result,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute[2],control_signals_execute[3],control_signals_execute[4],
+    ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem);
 
     // memory stage
     wire [15:0] dataFromMemory;
@@ -82,16 +87,19 @@ module Processor (
     wire [2:0] MEMWB_Rdst_address;
     wire MEMWB_memRead;
     wire MEMWB;
-    MemoryStage memory_stage(ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,regWrite_mem,memRead_mem,regWrite_mem,1'b0,1'b0,32'b0,
+    MemoryStage memory_stage(ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memWrite_mem,memRead_mem,regWrite_mem,1'b0,1'b0,32'b0,
     dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,clk); // TODO : write push and pop and sp
 
     // register between memory and write back
     wire [15:0] dataFromMemory_WB;
-    wire [15:0] MEMWB_ALU_result_WB;
-    wire [2:0] MEMWB_Rdst_address_WB;
+    wire [15:0] ALU_result_WB;
+    wire [2:0] WB_address;
     wire MEMWB_memRead_WB;
-    wire MEMWB_WB;
-    reg_mem_WB reg_mem_WB(clk,dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,dataFromMemory_WB,MEMWB_ALU_result_WB,MEMWB_Rdst_address_WB,MEMWB_memRead_WB,MEMWB_WB);
+    wire regWrite_WB;
+    reg_mem_WB reg_mem_WB(clk,dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,
+                            dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB);
 
-
+    // write back stage
+    wire [15:0] WB_data;
+    write_back WriteBack(dataFromMemory_WB,ALU_result_WB,MEMWB_memRead_WB,WB_data);
 endmodule
