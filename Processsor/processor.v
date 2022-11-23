@@ -93,9 +93,9 @@ module Processor (
     wire [15:0] dataFromMemory_WB;
     wire [15:0] ALU_result_WB;
     wire MEMWB_memRead_WB;
-    reg_mem_WB reg_mem_WB(clk,dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB);
+    reg_mem_WB reg_mem_WB(clk,dataFromMemory,ALU_result_mem,Rd_mem,memRead_mem,regWrite_mem,
+    dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB);
 
     // write back stage
-    
     write_back WriteBack(dataFromMemory_WB,ALU_result_WB,MEMWB_memRead_WB,WB_data);
 endmodule

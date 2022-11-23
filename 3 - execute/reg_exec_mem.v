@@ -35,7 +35,7 @@ module reg_exec_mem(
         ALU_result_mem = register[15:0];
         Rs_data_mem = register[31:16];
         Rd_data_mem = register[47:32];
-        Rd_mem = register[42:28];
+        Rd_mem = register[50:48];
         memRead_mem = register[51];
         memWrite_mem = register[52];
         regWrite_mem = register[53];

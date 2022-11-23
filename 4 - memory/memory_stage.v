@@ -68,7 +68,7 @@ assign address =                        //memory but no push or pop
     (selAddress == 2'b01) ? {16'b0,Rdst_value} : //Error: no push or pop without memory
     (selAddress == 2'b10) ? {16'b0,Rsrc_value} : 32'bz; //memory + push 
     //(selAddress == 2'b11) ? sp_pop : //memory + pop 
-DataMemory mem(address, Rsrc_value, dataFromMemoryWire, memRead, memWrite, CS, clk);
+DataMemory mem(address, Rsrc_value, dataFromMemoryWire, memRead, memWrite, 1'b1, clk);
 always @(posedge clk) begin
     // Pass EXMEM buffer data to MEMWB buffer
     MEMWB_ALU_result = ALU_result;
@@ -77,7 +77,7 @@ always @(posedge clk) begin
     MEMWB_WB = WB;
     // Data memory
     // if isMemory = 1, set CS (chip select) of memory to 1, else CS = 0
-    CS = isMemory;
+    //CS = 1;
     dataFromMemory = dataFromMemoryWire;
 end
 endmodule

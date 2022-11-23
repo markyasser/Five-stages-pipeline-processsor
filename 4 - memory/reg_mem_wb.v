@@ -15,7 +15,7 @@ module reg_mem_WB(
 );
     reg [36:0] register;
 
-    always @ (negedge clk) // read at the +ve edge
+    always @ (negedge clk) 
     begin
         register[15:0] <= dataFromMemory;
         register[31:16] <= MEMWB_ALU_result;
@@ -24,7 +24,7 @@ module reg_mem_WB(
         register[36] <= MEMWB;
     end
 
-    always @ (posedge clk) // write at the -ve edge
+    always @ (posedge clk) 
     begin
         dataFromMemory_WB = register[15:0];
         MEMWB_ALU_result_wB = register[31:16];

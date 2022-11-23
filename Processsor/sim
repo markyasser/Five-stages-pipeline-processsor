@@ -14,6 +14,8 @@ sim:/Processor/registers/regFile
 add wave -position insertpoint  \
 sim:/Processor/Fetch/PC
 add wave -position insertpoint  \
+sim:/Processor/Fetch/dataFromMemoryWire
+add wave -position insertpoint  \
 sim:/Processor/Rd \
 sim:/Processor/Rs \
 sim:/Processor/opCode
@@ -48,25 +50,24 @@ add wave -position insertpoint  \
 sim:/Processor/memory_stage/mem/dataMem
 add wave -position insertpoint  \
 sim:/Processor/memory_stage/mem/writeData
-add wave -position insertpoint  \
-sim:/Processor/memory_stage/mem/address
-add wave -position insertpoint  \
-sim:/Processor/memWrite_mem
-add wave -position insertpoint  \
-sim:/Processor/memRead_mem
-add wave -position insertpoint  \
-sim:/Processor/memory_stage/mem/CS
 
 
-#force -freeze sim:/Processor/Fetch/PC 32'b00100000 0
+# cycle 6
+add wave -position insertpoint  \
+sim:/Processor/registers/write_addr
+add wave -position insertpoint  \
+sim:/Processor/registers/write_data
+add wave -position insertpoint  \
+sim:/Processor/registers/write_enable
+
+
+
 force -freeze sim:/Processor/clk 1 0, 0 {25 ps} -r 50
-
 
 #force -freeze sim:/Processor/Decode/Rs_data 0000000000000111 0
 #force -freeze sim:/Processor/Decode/Rd_data 0000000000010110 0
 run
 
-#noforce sim:/Processor/Fetch/PC
 
 run 
 run 

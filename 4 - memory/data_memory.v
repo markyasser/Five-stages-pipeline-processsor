@@ -16,14 +16,14 @@ input clk;
 // Followed by the stack area (starting from [2^11−1 and up])
 reg [15:0] dataMem [0:(2 ** 11 - 1)];
 
-always @(posedge clk) begin
+always @(posedge clk,write) begin // asssuming write is a HW signal
     // Write
 	if(CS && write && !read)
 	begin
 		dataMem[address[10:0]] = writeData; 
 	end
 end
-always @(CS or address or read) begin
+always @(*) begin
 	// Read
 	if(CS && !write && read)
 	begin

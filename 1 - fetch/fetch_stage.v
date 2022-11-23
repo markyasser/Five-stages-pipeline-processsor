@@ -60,6 +60,14 @@ end
 
 // Instruction memory
 InstructionMemory mem(PC, writeData, dataFromMemoryWire, 1'b1, 1'b0, CS, clk);
+
+always @(*)begin 
+    SHMNT = dataFromMemoryWire[4:0];
+    Rd = dataFromMemoryWire[7:5];
+    Rs = dataFromMemoryWire[10:8];
+    opCode = dataFromMemoryWire[15:11];
+end
+
 always @(posedge clk) begin
     // Pass data to IF/ID buffer
     // TODO: get it from ALU
@@ -69,9 +77,6 @@ always @(posedge clk) begin
     // CS always 1
     CS = 1;
     // isImmediate = dataFromMemoryWire[0];
-    SHMNT = dataFromMemoryWire[4:0];
-    Rd = dataFromMemoryWire[7:5];
-    Rs = dataFromMemoryWire[10:8];
-    opCode = dataFromMemoryWire[15:11];
+    
 end
 endmodule

@@ -29,7 +29,7 @@ module RegFile #(parameter N=16) (write_enable, read_addr_1,read_addr_2,read_dat
     read_data_2 <= regFile[read_addr_2];
   end
   
-  always @ (posedge clk) //write at the +ve edge
+  always @ (posedge clk,write_data) //write at the +ve edge (write_data is wrong but we will ask Dr.Dina about it)
   begin
     if(rstAll)
     begin //write 0 in all registers
