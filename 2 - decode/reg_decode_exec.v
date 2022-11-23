@@ -15,24 +15,24 @@ module reg_decode_exec(
     output reg [2:0] Rd_execute,
     output reg [7:0] control_signals_execute
 );
-    reg [63:0]register;
+    reg [63:0] register;
 
-    always @ (posedge clk) //read at the +ve edge
+    always @ (negedge clk) // read at the +ve edge
     begin
         register[7:0] <= control_signals;
         register[10:8] <= Rd;
-        register[27:11] <= Rd_data;
-        register[42:28] <= Rs_data;
+        register[26:11] <= Rd_data;
+        register[42:27] <= Rs_data;
         register[47:43] <= shmnt;
         register[63:48] <= Imm_value;
     end
 
-    always @ (negedge clk) //write at the -ve edge
+    always @ (posedge clk) // write at the -ve edge
     begin
-        control_signals_execute = register[7:0] ;
-        Rd_execute = register[10:8] ;
-        Rd_data_execute = register[27:11];
-        Rs_data_execute = register[42:28];
+        control_signals_execute = register[7:0];
+        Rd_execute = register[10:8];
+        Rd_data_execute = register[26:11];
+        Rs_data_execute = register[42:27];
         shmnt_execute = register[47:43];
         Imm_value_execute = register[63:48];
     end
