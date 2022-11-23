@@ -17,11 +17,11 @@ input clk;
 // instructions area starts from [2^5 and down to 2^20]
 reg [15:0] instMemory [0:(2 ** 20 - 1)];
 initial begin
-	instMemory[2 ** 5] = 16'b00011_001_010_00000;
-	instMemory[2 ** 5 + 1] = 16'b00100_100_011_00000;
-	instMemory[2 ** 5 + 2] = 16'b00010_110_101_00000;
-	instMemory[2 ** 5 + 3] = 16'b00100_001_010_00000;
-	instMemory[2 ** 5 + 4] = 16'b00101_000_001_00000;
+	instMemory[2 ** 5] = 	 16'b00011_001_010_00000;	// ADD R1,R2 -> R1 = 1 + 2 = 3
+	instMemory[2 ** 5 + 1] = 16'b00100_100_011_00000;	// NOT R3
+	instMemory[2 ** 5 + 2] = 16'b00010_110_101_00000;	// STD R6,R5 -> Mem[5] = 6
+	instMemory[2 ** 5 + 3] = 16'b00100_001_010_00000;	// NOT R2
+	instMemory[2 ** 5 + 4] = 16'b00101_000_001_00000;	// NOP
 end
 always @(posedge clk) begin
     // Write

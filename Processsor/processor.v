@@ -11,8 +11,8 @@
 `include "../3 - execute/reg_exec_mem.v"
 
 `include "../4 - memory/memory_stage.v"
-`include "../4 - memory/reg_mem_wb.v"
 `include "../4 - memory/data_memory.v"
+`include "../4 - memory/reg_mem_wb.v"
 
 `include "../5 - write back/write_back.v"
 
@@ -42,9 +42,9 @@ module Processor (
     Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode);
 
     // decode stage
-    //reg  [15:0] WB_data; //defined in write back (down)
-    //reg  [2:0] WB_address; //from in memory / write back registers(down)
-    //reg regWrite_WB;
+    wire [15:0] WB_data;    // will be initiallized from write back (down)
+    wire [2:0] WB_address;  // will be initiallized from write back (down)
+    wire regWrite_WB;       // will be initiallized from write back (down)
     reg rst;
     reg rstAll;
     wire [15:0] Rs_data;
@@ -52,7 +52,6 @@ module Processor (
     wire [7:0] control_signals;
     control_unit CU(opcode_decode,control_signals);
     RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,rstAll,WB_address); 
-    //instruction_decode Decode(clk,opcode_decode,Rs_decode,Rd_decode,WB_data,WB_address,write_enable,rst,rstAll,Rs_data,Rd_data,control_signals);
     
     // register between decode and execute
     wire [15:0]Imm_value_execute;
@@ -93,13 +92,10 @@ module Processor (
     // register between memory and write back
     wire [15:0] dataFromMemory_WB;
     wire [15:0] ALU_result_WB;
-    wire [2:0] WB_address;
     wire MEMWB_memRead_WB;
-    wire regWrite_WB;
-    reg_mem_WB reg_mem_WB(clk,dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,
-                            dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB);
+    reg_mem_WB reg_mem_WB(clk,dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB);
 
     // write back stage
-    wire [15:0] WB_data;
+    
     write_back WriteBack(dataFromMemory_WB,ALU_result_WB,MEMWB_memRead_WB,WB_data);
 endmodule
