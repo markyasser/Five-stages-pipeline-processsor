@@ -22,7 +22,7 @@ module reg_decode_exec(
     //     register[42:27] <= Rs_data;
     // end
 
-    always @ (negedge clk,Rs_data,Rd_data) // read at the +ve edge
+    always @ (negedge clk,Rs_data,Rd_data,Imm_value) // read at the +ve edge
     begin
         register[7:0] <= control_signals;
         register[10:8] <= Rd;

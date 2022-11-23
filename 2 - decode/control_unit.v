@@ -19,7 +19,3 @@ module control_unit(opcode,control_signals);
     (opcode == 5'b00_100)? 8'b0001_0001:                  // NOT : not + regWrite
     (opcode == 5'b00_101)? 8'b0 : 8'bx;                   // NOP
 endmodule
-
-
-
-

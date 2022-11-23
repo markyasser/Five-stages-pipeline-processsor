@@ -30,7 +30,9 @@ module Processor (
     wire [2:0] Rd;
     wire [2:0] Rs;
     wire [4:0] opCode;
-    FetchStage Fetch(32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,clk);
+    wire [7:0] control_signals; // will be initialized in decode stage
+    wire [15:0] Inst_as_Imm_value;
+    FetchStage Fetch(32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[5],Inst_as_Imm_value,clk);
     
     // register between fetch and decode
     wire [31:0] Next_inst_addr_decode;
@@ -49,7 +51,7 @@ module Processor (
     reg rstAll;
     wire [15:0] Rs_data;
     wire [15:0] Rd_data;
-    wire [7:0] control_signals;
+    
     control_unit CU(opcode_decode,control_signals);
     RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,rstAll,WB_address); 
     
@@ -60,13 +62,13 @@ module Processor (
     wire [15:0]Rd_data_execute;
     wire [2:0] Rd_execute;
     wire [7:0] control_signals_execute;
-    reg_decode_exec reg_dec_exec(clk,{opcode_decode,Rs_decode,Rd_decode,shmnt_decode},shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,
+    reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,
     Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute);
 
     // execute stage
     wire [15:0] ALU_Result; // ALU 16-bit Output
     wire [2:0] ccr_out; // flags register
-    ALU alu(Rs_data_execute,Rd_data_execute,control_signals_execute[1],control_signals_execute[0],ALU_Result,ccr_out,clk);
+    ALU alu(Rs_data_execute,Imm_value_execute,control_signals_execute[5],Rd_data_execute,control_signals_execute[1],control_signals_execute[0],ALU_Result,ccr_out,clk);
     always @(ccr_out) begin CCR = ccr_out; end
 
     // register between execute and memory

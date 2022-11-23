@@ -22,8 +22,9 @@ initial begin
 	instMemory[2 ** 5 + 2] = 16'b00010_110_101_00000;	// STD R6,R5 -> Mem[5] = 6
 	instMemory[2 ** 5 + 3] = 16'b00100_001_000_00000;	// NOT R0
 	instMemory[2 ** 5 + 4] = 16'b00101_000_001_00000;	// NOP
-	instMemory[2 ** 5 + 5] = 16'b00001_000_001_00000;	// LDM R4,Imm
+	instMemory[2 ** 5 + 5] = 16'b00001_000_100_00000;	// LDM R4,Imm
 	instMemory[2 ** 5 + 6] = 16'b0101_0101_0101_0101;	// Imm value
+	instMemory[2 ** 5 + 7] = 16'b00100_100_011_00000;	// NOT R3
 end
 always @(posedge clk) begin
     // Write
