@@ -41,17 +41,16 @@ sim:/Processor/ALU_result_mem
 
 # cycle 5
 add wave -position insertpoint  \
-sim:/Processor/Rs_data_mem \
-sim:/Processor/Rd_data_mem
-
-
-# cycle 6
-add wave -position insertpoint  \
 sim:/Processor/registers/write_addr
 add wave -position insertpoint  \
 sim:/Processor/registers/write_data
+
+
+# signals
 add wave -position insertpoint  \
 sim:/Processor/registers/write_enable
+add wave -position insertpoint  \
+sim:/Processor/memory_stage/mem/write
 
 
 

@@ -11,14 +11,14 @@ module RegFile #(parameter N=16) (write_enable, read_addr_1,read_addr_2,read_dat
   
   //--------for testing only---------
   initial begin
-    regFile[0] = 16'd0;
-    regFile[1] = 16'd1;
-    regFile[2] = 26'd2;
-    regFile[3] = 16'd3;
-    regFile[4] = 16'd4;
-    regFile[5] = 16'd5;
-    regFile[6] = 16'd6;
-    regFile[7] = 16'd7;
+    regFile[0] = 16'dx;
+    regFile[1] = 16'dx;
+    regFile[2] = 16'dx;
+    regFile[3] = 16'dx;
+    regFile[4] = 16'dx;
+    regFile[5] = 16'dx;
+    regFile[6] = 16'dx;
+    regFile[7] = 16'dx;
   end
   //---------------------------------
   
