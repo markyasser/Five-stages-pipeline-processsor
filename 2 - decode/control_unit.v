@@ -13,9 +13,9 @@ module control_unit(opcode,control_signals);
     */
 
     assign control_signals = 
-    (opcode == 5'b00_001)? 8'b0011_0000:                  // LDM : ldm + regWrite    
-    (opcode == 5'b00_010)? 8'b0000_1000:                  // STD : memWrite
-    (opcode == 5'b00_011)? 8'b0001_0010:                  // ADD : add + regWrite         
-    (opcode == 5'b00_100)? 8'b0001_0001:                  // NOT : not + regWrite
-    (opcode == 5'b00_101)? 8'b0 : 8'bx;                   // NOP
+    (opcode == 5'b11_010)? 8'b0011_0000:                  // LDM : ldm + regWrite    
+    (opcode == 5'b01_100)? 8'b0000_1000:                  // STD : memWrite
+    (opcode == 5'b10_011)? 8'b0001_0010:                  // ADD : add + regWrite         
+    (opcode == 5'b10_100)? 8'b0001_0001:                  // NOT : not + regWrite
+    (opcode == 5'b00_000)? 8'b0 : 8'bx;                   // NOP
 endmodule
