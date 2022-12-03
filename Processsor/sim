@@ -8,6 +8,10 @@ sim:/Processor/clk
 add wave -position insertpoint  \
 sim:/Processor/registers/regFile
 
+# show flag register
+add wave -position insertpoint  \
+sim:/Processor/alu/CCR
+
 # show data memory 
 add wave -position insertpoint  \
 sim:/Processor/memory_stage/mem/dataMem
@@ -19,18 +23,16 @@ add wave -position insertpoint  \
 sim:/Processor/Fetch/PC
 add wave -position insertpoint  \
 sim:/Processor/Fetch/dataFromMemoryWire
-add wave -position insertpoint  \
-sim:/Processor/Rd \
-sim:/Processor/Rs \
-sim:/Processor/opCode
+#add wave -position insertpoint  \
+#sim:/Processor/Rd \
+#sim:/Processor/Rs \
+#sim:/Processor/opCode
 
 # cycle 2 
 add wave -position insertpoint  \
 sim:/Processor/control_signals
 
 # cycle 3 
-add wave -position insertpoint  \
-sim:/Processor/control_signals_execute
 add wave -position insertpoint  \
 sim:/Processor/ALU_Result
 
@@ -40,8 +42,6 @@ sim:/Processor/ALU_result_mem
 
 
 # cycle 5
-add wave -position insertpoint  \
-sim:/Processor/registers/write_addr
 add wave -position insertpoint  \
 sim:/Processor/registers/write_data
 
