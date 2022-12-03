@@ -6,7 +6,7 @@ module ALU(Src,ImmValue,LDM_signal,Dst,ALU_ADD,ALU_NOT,ALU_Result,CCR,clk);
     output reg [15:0] ALU_Result; // ALU 16-bit Output
     output reg[2:0] CCR; // flags register
     //wires
-    wire ZeroFlag,NegativeFlag,OverflowFlag;
+    wire ZeroFlag,NegativeFlag,CarryFlag;
     wire [2:0] control_Bits;
     //The Operations
     assign control_Bits[0] = ALU_ADD;
@@ -14,7 +14,7 @@ module ALU(Src,ImmValue,LDM_signal,Dst,ALU_ADD,ALU_NOT,ALU_Result,CCR,clk);
     assign control_Bits[2] = LDM_signal;
     // Temp Reg And wire
     wire[15:0] Source;
-    wire [15:0] tmp;
+    wire [16:0] tmp;
     assign tmp = {1'b0,Source} + {1'b0,Dst};
 
     assign Source = LDM_signal == 1 ? ImmValue : Src;
@@ -48,10 +48,10 @@ module ALU(Src,ImmValue,LDM_signal,Dst,ALU_ADD,ALU_NOT,ALU_Result,CCR,clk);
     // // Assigning Flags
     assign ZeroFlag = (ALU_Result == 0) ? 1 : 0;
     assign NegativeFlag = (ALU_Result[15] == 1) ? 1 : 0;
-    assign OverflowFlag = (control_Bits == 1 && Source[15]==Dst[15] && Source[15] != tmp[15]) ? 1 : 0;
+    assign CarryFlag = (control_Bits == 1 && tmp[16] == 1) ? 1 : 0;
     // // Flag Register
     assign CCR[0] = ZeroFlag;
     assign CCR[1] = NegativeFlag;
-    assign CCR[2] = OverflowFlag;
+    assign CCR[2] = CarryFlag;
 
 endmodule
