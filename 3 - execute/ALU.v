@@ -49,9 +49,10 @@ module ALU(Src,ImmValue,LDM_signal,Dst,ALU_ADD,ALU_NOT,ALU_Result,CCR,clk);
     assign ZeroFlag = (ALU_Result == 0) ? 1 : 0;
     assign NegativeFlag = (ALU_Result[15] == 1) ? 1 : 0;
     assign CarryFlag = (control_Bits == 1 && tmp[16] == 1) ? 1 : 0;
-    // // Flag Register
-    assign CCR[0] = ZeroFlag;
-    assign CCR[1] = NegativeFlag;
-    assign CCR[2] = CarryFlag;
+
+    // Flag Register
+    assign CCR[0] = (control_Bits != 0)? ZeroFlag    :CCR[0];
+    assign CCR[1] = (control_Bits != 0)? NegativeFlag:CCR[1];
+    assign CCR[2] = (control_Bits != 0)? CarryFlag   :CCR[2];
 
 endmodule

@@ -10,7 +10,7 @@ sim:/Processor/registers/regFile
 
 # show flag register
 add wave -position insertpoint  \
-sim:/Processor/alu/CCR
+sim:/Processor/CCR
 
 # show data memory 
 add wave -position insertpoint  \
