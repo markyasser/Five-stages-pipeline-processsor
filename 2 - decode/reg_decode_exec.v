@@ -5,7 +5,7 @@ module reg_decode_exec(
     input [15:0]Rs_data,
     input [15:0]Rd_data,
     input [2:0] Rd,
-    input [7:0] control_signals,
+    input [29:0] control_signals,
 
 
     output reg [15:0]Imm_value_execute,
@@ -13,9 +13,9 @@ module reg_decode_exec(
     output reg [15:0]Rs_data_execute,
     output reg [15:0]Rd_data_execute,
     output reg [2:0] Rd_execute,
-    output reg [7:0] control_signals_execute
+    output reg [29:0] control_signals_execute
 );
-    reg [63:0] register;
+    reg [85:0] register;
 
     // always @(Rs_data,Rd_data) begin
     //     register[26:11] <= Rd_data;
@@ -24,22 +24,22 @@ module reg_decode_exec(
 
     always @ (negedge clk,Rs_data,Rd_data,Imm_value) // read at the +ve edge
     begin
-        register[7:0] <= control_signals;
-        register[10:8] <= Rd;
-        register[26:11] <= Rd_data;
-        register[42:27] <= Rs_data;
-        register[47:43] <= shmnt;
-        register[63:48] <= Imm_value;
+        register[29:0] <= control_signals;
+        register[32:30] <= Rd;
+        register[48:33] <= Rd_data;
+        register[64:49] <= Rs_data;
+        register[69:65] <= shmnt;
+        register[85:70] <= Imm_value;
     end
 
     always @ (posedge clk) // write at the -ve edge
     begin
-        control_signals_execute = register[7:0];
-        Rd_execute = register[10:8];
-        Rd_data_execute = register[26:11];
-        Rs_data_execute = register[42:27];
-        shmnt_execute = register[47:43];
-        Imm_value_execute = register[63:48];
+        control_signals_execute = register[29:0];
+        Rd_execute = register[32:30];
+        Rd_data_execute = register[48:33];
+        Rs_data_execute = register[64:49];
+        shmnt_execute = register[69:65];
+        Imm_value_execute = register[85:70];
     end
 
 endmodule

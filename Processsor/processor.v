@@ -30,9 +30,9 @@ module Processor (
     wire [2:0] Rd;
     wire [2:0] Rs;
     wire [4:0] opCode;
-    wire [7:0] control_signals; // will be initialized in decode stage
+    wire [29:0] control_signals; // will be initialized in decode stage
     wire [15:0] Inst_as_Imm_value;
-    FetchStage Fetch(32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[5],Inst_as_Imm_value,clk);
+    FetchStage Fetch(32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
     
     // register between fetch and decode
     wire [31:0] Next_inst_addr_decode;
@@ -61,14 +61,14 @@ module Processor (
     wire [15:0]Rs_data_execute;
     wire [15:0]Rd_data_execute;
     wire [2:0] Rd_execute;
-    wire [7:0] control_signals_execute;
+    wire [29:0] control_signals_execute;
     reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,
     Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute);
 
     // execute stage
     wire [15:0] ALU_Result; // ALU 16-bit Output
     wire [2:0] ccr_out; // flags register
-    ALU alu(Rs_data_execute,Imm_value_execute,control_signals_execute[5],Rd_data_execute,control_signals_execute[1],control_signals_execute[0],ALU_Result,ccr_out,clk);
+    ALU alu(Rs_data_execute,Imm_value_execute,control_signals_execute[13],Rd_data_execute,control_signals_execute[21],control_signals_execute[27],ALU_Result,ccr_out,clk);
     always @(ccr_out) begin CCR = ccr_out; end
 
     // register between execute and memory
@@ -79,7 +79,7 @@ module Processor (
     wire  memRead_mem;
     wire  memWrite_mem;
     wire  regWrite_mem;
-    reg_exec_mem reg_exec_mem(clk,ALU_Result,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute[2],control_signals_execute[3],control_signals_execute[4],
+    reg_exec_mem reg_exec_mem(clk,ALU_Result,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
     ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem);
 
     // memory stage
