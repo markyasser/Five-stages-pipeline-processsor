@@ -1,0 +1,6 @@
+add r7, r6
+sub r5, r4
+and r3, r2
+or r1, r0
+not r4
+
