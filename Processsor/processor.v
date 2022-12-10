@@ -88,7 +88,14 @@ module Processor (
     wire [2:0] MEMWB_Rdst_address;
     wire MEMWB_memRead;
     wire MEMWB;
-    MemoryStage memory_stage(ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memWrite_mem,memRead_mem,regWrite_mem,1'b0,1'b0,32'b0,
+    MemoryStage memory_stage(ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memWrite_mem,memRead_mem,regWrite_mem,
+    1'b0, //push
+    1'b0, //pop
+    32'b0, //sp
+    32'b0, //pc
+    4'b0, //counter value
+    1'b0, //int signal comming from counter
+    16'b0, //flag register
     dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,clk); // TODO : write push and pop and sp
 
     // register between memory and write back

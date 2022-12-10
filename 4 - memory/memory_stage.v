@@ -10,12 +10,17 @@ module MemoryStage (
     push,
     pop,
     sp,
+    pc,
+    intCounterValue,
+    intSignalFromCounter,
+    flagReg,
     dataFromMemory,
     MEMWB_ALU_result,
     MEMWB_Rdst_address,
     MEMWB_memRead,
     MEMWB_WB,
     clk
+    // TODO: output new PC
 );
 // EXMEM input
 input [15:0] ALU_result;
@@ -31,6 +36,10 @@ input pop;
 input clk;
 // SP of processor
 input [31:0]sp;
+input [1:0]intCounterValue;
+input intSignalFromCounter;
+input [31:0]pc;
+input [15:0]flagReg;
 // MEMWB
 // Read data
 output reg [15:0] dataFromMemory;
@@ -45,6 +54,8 @@ wire [15:0] dataFromMemoryWire;
 wire sp_push;
 wire sp_pop;
 wire [31:0] address;
+wire [15:0] writeData;
+wire [15:0] writeDataInCaseOfInt;
 
 wire sel_stackOrMem;
 wire sel_pushOrPop;
@@ -70,8 +81,18 @@ assign sel_stackOrMem = !push & !pop;
 assign address =
     (sel_stackOrMem == 1'b0) ? address_pushOrPop :
     (sel_stackOrMem == 1'b1) ? address_readOrWrite : 32'bz;
-    //(selAddress == 2'b11) ? sp_pop : //memory + pop 
-DataMemory mem(address, Rsrc_value, dataFromMemoryWire, memRead, memWrite, 1'b1, clk);
+// MUX to select memory write data in case of interupt
+assign writeDataInCaseOfInt =
+    (intCounterValue == 2'b00) ? Rsrc_value :
+    (intCounterValue == 2'b01) ? pc[31:16] :
+    (intCounterValue == 2'b10) ? pc[16:0] :
+    (intCounterValue == 2'b11) ? flagReg : 16'bz;
+// MUX to select memory write data in case we have interupt or normal operation
+assign writeData =
+    (intSignalFromCounter == 1'b0) ? Rsrc_value :
+    (intSignalFromCounter == 1'b1) ? writeDataInCaseOfInt : 16'bz;
+
+DataMemory mem(address, writeData, dataFromMemoryWire, memRead, memWrite, 1'b1, clk);
 always @(posedge clk) begin
     // Pass EXMEM buffer data to MEMWB buffer
     MEMWB_ALU_result = ALU_result;
