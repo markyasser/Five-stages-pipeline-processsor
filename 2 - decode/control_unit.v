@@ -51,7 +51,7 @@ module control_unit(opcode,control_signals);
     (opcode == 5'b01011)? 30'b00_0000_0000_0000_0000_0100_0000_0001:                  // JZ : jz + branch 
 
     (opcode == 5'b01100)? 30'b00_0000_0000_0000_0000_1000_0000_0010:                  // STD : std + memWrite
-    (opcode == 5'b00111)? 30'b00_0000_0000_0000_0001_0000_0000_0100:                  // LDD : ldd + memread
+    (opcode == 5'b00111)? 30'b00_0000_0000_0000_0001_0000_0000_1100:                  // LDD : ldd + memread + WB
     (opcode == 5'b11010)? 30'b00_0000_0000_0000_0010_0000_0000_1000:                  // LDM : ldm + WB    
 
     (opcode == 5'b00110)? 30'b00_0000_0000_0000_0100_0000_0000_1100:                  // POP : pop + WB + memread

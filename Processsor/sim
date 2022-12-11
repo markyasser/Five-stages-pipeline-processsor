@@ -42,7 +42,8 @@ sim:/Processor/ALU_result_mem
 # cycle 5
 add wave -position insertpoint  \
 sim:/Processor/registers/write_data
-
+add wave -position insertpoint  \
+sim:/Processor/WriteBack/dataFromMemory
 
 # signals
 add wave -position insertpoint  \
@@ -56,6 +57,9 @@ force -freeze sim:/Processor/clk 1 0, 0 {25 ps} -r 50
 force -freeze sim:/Processor/RESET 1 0
 run
 force -freeze sim:/Processor/RESET 0 1
+run
+run
+run
 run
 run
 run

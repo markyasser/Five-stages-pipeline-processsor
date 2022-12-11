@@ -1,5 +1,8 @@
 LDM r3, 1
 LDM r7, 1
 add r7, r3
-add r3, r1
 add r3, r2
+STD r3, r5 
+# mem[0] = 1
+LDD r5, r1 
+# r1 = 2

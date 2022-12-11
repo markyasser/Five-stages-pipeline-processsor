@@ -93,6 +93,7 @@ assign writeData =
     (intSignalFromCounter == 1'b1) ? writeDataInCaseOfInt : 16'bz;
 
 DataMemory mem(address, writeData, dataFromMemoryWire, memRead, memWrite, 1'b1, clk);
+always@(*) begin    dataFromMemory = dataFromMemoryWire;end
 always @(posedge clk) begin
     // Pass EXMEM buffer data to MEMWB buffer
     MEMWB_ALU_result = ALU_result;
@@ -102,7 +103,6 @@ always @(posedge clk) begin
     // Data memory
     // if isMemory = 1, set CS (chip select) of memory to 1, else CS = 0
     //CS = 1;
-    dataFromMemory = dataFromMemoryWire;
     // update sp in case of push or pop
     if (sel_stackOrMem == 0) begin
         if (push) begin

@@ -5,5 +5,5 @@ input memRead;
 
 output [15:0]WB_data;
 
-assign WB_data = memRead == 1? dataFromMemory: dataFromAlu;
+assign WB_data = (memRead == 1'b1)? dataFromMemory: dataFromAlu;
 endmodule

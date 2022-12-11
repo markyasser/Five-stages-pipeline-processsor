@@ -125,7 +125,7 @@ module Processor (
     wire [15:0] Rd_data_mem;
     wire  memRead_mem;
     wire  memWrite_mem;
-    reg_exec_mem reg_exec_mem(clk,ALU_Result,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
+    reg_exec_mem reg_exec_mem(clk,ALU_Result,src,Rd_data_execute,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
     ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem);
 
     // memory stage
