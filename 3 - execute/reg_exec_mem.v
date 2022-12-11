@@ -17,7 +17,9 @@ module reg_exec_mem(
     output reg  regWrite_mem
 );
     reg [53:0] register;
-
+    initial begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
+        register = 0;
+    end
     always @ (negedge clk) // write at the -ve edge
     begin
         register[15:0] <= ALU_result;

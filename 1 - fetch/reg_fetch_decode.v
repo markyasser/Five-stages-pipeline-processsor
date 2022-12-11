@@ -13,7 +13,9 @@ module reg_fetch_decode(
     output reg [4:0] shmnt_decode
 );
     reg [47:0] register;
-
+    initial begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
+        register = 0;
+    end
     always @ (negedge clk) // write at the -ve edge
     begin
         register[31:0] <= Next_inst_addr;

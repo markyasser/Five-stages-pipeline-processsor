@@ -10,6 +10,8 @@
 `include "../3 - execute/ALU.v"
 `include "../3 - execute/mux_Src_Imm.v"
 `include "../3 - execute/reg_exec_mem.v"
+`include "../3 - execute/FU.v"
+`include "../3 - execute/FUMux.v"
 
 `include "../4 - memory/memory_stage.v"
 `include "../4 - memory/data_memory.v"
@@ -18,7 +20,8 @@
 `include "../5 - write back/write_back.v"
 
 module Processor (
-    input clk
+    input clk,
+    input RESET
 );
     reg [2:0] CCR; // flag register
     reg [15:0] In_Port;
@@ -50,30 +53,45 @@ module Processor (
     wire [2:0] WB_address;  // will be initiallized from write back (down)
     wire regWrite_WB;       // will be initiallized from write back (down)
     reg rst;
-    reg rstAll;
+    // reg rstAll;
     wire [15:0] Rs_data;
     wire [15:0] Rd_data;
     
     control_unit CU(opcode_decode,control_signals);
-    RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,rstAll,WB_address); 
+    RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,RESET,WB_address); 
     
     // register between decode and execute
     wire [15:0]Imm_value_execute;
     wire [4:0]shmnt_execute;
     wire [15:0]Rs_data_execute;
+    wire [2:0]Rs_execute;
     wire [15:0]Rd_data_execute;
     wire [2:0] Rd_execute;
     wire [29:0] control_signals_execute;
-    reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,
-    Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute);
+
+    reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,
+    Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute);
 
     // execute stage
     wire [15:0] ALU_Result; // ALU 16-bit Output
     wire [2:0] ccr_out; // flags register
-    wire [8:0] is_alu;  // check if there is an ALU operation
-    wire [15:0] src; // ALU source
-    mux21 mux2x1(Rs_data_execute,Imm_value_execute,control_signals_execute[13],src);
-    ALU alu(src,Rd_data_execute,
+    wire [15:0] src_from_mux; // ALU source
+    mux21 mux2x1(Rs_data_execute,Imm_value_execute,control_signals_execute[13],src_from_mux);
+
+    wire [15:0] ALU_result_mem; // ALU RESULT FROM MEMORY STAGE
+    wire [2:0] Rd_mem; // Rd from memory stage
+    // WB_address is Rd from WB stage
+    wire  regWrite_mem; //regWrite_WB is WB signal from WB stage
+    // regWrite_mem is WB signal from memory stage
+    wire [1:0]selectorFU_src;
+    wire [1:0]selectorFU_dst;
+    FU forwaringUnit(Rs_execute,Rd_execute,Rd_mem,WB_address,regWrite_mem,regWrite_WB,selectorFU_src,selectorFU_dst);
+
+    wire [15:0] src;
+    wire [15:0] dst;
+    mux32 muxForwarding_Src(src_from_mux,ALU_result_mem,WB_data,selectorFU_src,src); 
+    mux32 muxForwarding_Dst(Rd_data_execute,ALU_result_mem,WB_data,selectorFU_dst,dst); 
+    ALU alu(src,dst,
     control_signals_execute[21],
     control_signals_execute[27],
     control_signals_execute[26],
@@ -103,13 +121,10 @@ module Processor (
     control_signals_execute[13] == 1 )begin CCR = ccr_out; end end
 
     // register between execute and memory
-    wire [15:0] ALU_result_mem;
     wire [15:0] Rs_data_mem;
     wire [15:0] Rd_data_mem;
-    wire [2:0] Rd_mem;
     wire  memRead_mem;
     wire  memWrite_mem;
-    wire  regWrite_mem;
     reg_exec_mem reg_exec_mem(clk,ALU_Result,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
     ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem);
 

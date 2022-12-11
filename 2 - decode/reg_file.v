@@ -29,7 +29,7 @@ module RegFile #(parameter N=16) (write_enable, read_addr_1,read_addr_2,read_dat
     read_data_2 <= regFile[read_addr_2];
   end
   
-  always @ (posedge clk,write_data) //write at the +ve edge (write_data is wrong but we will ask Dr.Dina about it)
+  always @ (posedge clk,write_data,write_addr) //write at the +ve edge (write_data and write_addr is wrong but we will ask Dr.Dina about it : if we remove them data is writen late by 1 cycle)
   begin
     if(rstAll)
     begin //write 0 in all registers

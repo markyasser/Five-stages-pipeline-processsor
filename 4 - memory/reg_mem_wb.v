@@ -14,7 +14,9 @@ module reg_mem_WB(
     output reg MEMWB_WB
 );
     reg [36:0] register;
-
+    initial begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
+        register = 0;
+    end
     always @ (negedge clk) 
     begin
         register[15:0] <= dataFromMemory;
