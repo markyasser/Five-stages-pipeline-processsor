@@ -7,7 +7,6 @@ module reg_exec_mem(
     input  memRead,
     input  memWrite,
     input  regWrite,
-    input  [2:0]CCR_old,
 
     output reg [15:0] ALU_result_mem,
     output reg [15:0] Rs_data_mem,
@@ -15,10 +14,9 @@ module reg_exec_mem(
     output reg [2:0] Rd_mem,
     output reg  memRead_mem,
     output reg  memWrite_mem,
-    output reg  regWrite_mem,
-    output reg  [2:0] CCR_old_mem
+    output reg  regWrite_mem
 );
-    reg [56:0] register;
+    reg [53:0] register;
 
     always @ (negedge clk) // write at the -ve edge
     begin
@@ -29,7 +27,6 @@ module reg_exec_mem(
         register[51] <=  memRead;
         register[52] <=  memWrite;
         register[53] <=  regWrite;
-        register[56:54] <= CCR_old;
     end
 
     always @ (posedge clk) // read at the +ve edge
@@ -41,7 +38,6 @@ module reg_exec_mem(
         memRead_mem = register[51];
         memWrite_mem = register[52];
         regWrite_mem = register[53];
-        CCR_old_mem = register[56:54];
     end
 
 endmodule
