@@ -3,7 +3,7 @@ assemblyFilePath = "assembly.txt"
 outputPath = "binary.txt"
 
 opcodeMap = {
-    "NOP":"00000",
+    "NOP": "00000",
     "SETC":	"00001",
     "CLRC":	"00010",
     "OUT":  "00011",
@@ -32,15 +32,22 @@ opcodeMap = {
     "LDM": 	"11010"
 }
 regAddressMap = {
-    "R0" : "000",
-    "R1" : "001",
-    "R2" : "010",
-    "R3" : "011",
-    "R4" : "100",
-    "R5" : "101",
-    "R6" : "110",
-    "R7" : "111",
+    "R0": "000",
+    "R1": "001",
+    "R2": "010",
+    "R3": "011",
+    "R4": "100",
+    "R5": "101",
+    "R6": "110",
+    "R7": "111",
 }
+
+def writeHexToFile(file,binary):
+    file.write(f'{int(binary, 2):X}'+"\n")
+
+def writeBinaryToFile(file,binary):
+    file.write(binary+"\n")
+
 def assemblyToBinary(line):
     instructionSplit = re.split(" |, ", line)
     instructionArray = []
@@ -56,22 +63,22 @@ def assemblyToBinary(line):
     imm = ""
     if (len(instructionArray) == 1):
         opcode = opcodeMap[instructionArray[0].upper()]
-        f_out.write(opcode+rs+rd+shmnt+"\n")
+        writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
     if (len(instructionArray) == 2):
         opcode = opcodeMap[instructionArray[0].upper()]
         if instructionArray[1][0] == 'r':
             rd = regAddressMap[instructionArray[1].upper()]
-        f_out.write(opcode+rs+rd+shmnt+"\n")
+        writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
     elif (len(instructionArray) == 3):
         opcode = opcodeMap[instructionArray[0].upper()]
         if instructionArray[1][0] == 'r':
             rs = regAddressMap[instructionArray[1].upper()]
         if instructionArray[2][0] == 'r':
             rd = regAddressMap[instructionArray[2].upper()]
-            f_out.write(opcode+rs+rd+shmnt+"\n")
+            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
         else:
             # Write immediate value
-            f_out.write(opcode+rs+rd+shmnt+"\n")
+            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
     # if (instructionArray[0] == "mov"):
     #     if (len(instructionArray) != 3):
     #         return '', '', '', ''
@@ -216,60 +223,17 @@ def assemblyToBinary(line):
     # pass
 
 
-def inttohex(opcode, rs, rt, rd, func, imm):
-    if (opcode == 0):
-        opstr = format(opcode, '02b')
-        rsstr = format(rs, '03b')
-        rtstr = format(rt, '03b')
-        rdstr = format(rd, '03b')
-        fnstr = format(func, '05b')
-        # print opstr, rsstr, rtstr, rdstr, fnstr
-        instruction = opstr + rsstr + rtstr + rdstr + fnstr
-    else:
-        opstr = format(opcode, '02b')
-        rtstr = format(rt, '03b')
-        rsstr = format(rs, '03b')
-        if (imm < 0):
-            imm2s = ((-imm) ^ 255) + 1
-            immstr = format(imm2s, '08b')
-        else:
-            immstr = format(imm, '08b')
-        # print opstr, rtstr, rsstr, immstr
-        instruction = opstr + rsstr + rtstr + immstr
-    return format(int(instruction, 2), '04x')
 
-
-def decode(asm):
-    # opcode, rs, rt, rd, func, imm = asmtoint(asm)
-    # instruction = inttohex(opcode, rs, rt, rd, func, imm)
-    # return instruction
-    pass
-
-
+# -------------Main---------------
 f = open(assemblyFilePath, "r")
 f_out = open(outputPath, "w")
 
-def saveFile():
-    pass
-# -------------Main---------------
+
 for line in f:
     if line[0] == "#" or line[0] == "" or line[0] == "\n":
         continue
     line = re.sub('\n', '', line)
     print(assemblyToBinary(line.lower()))
-    # print(line)
     pass
 
 f_out.close()
-# Sample counting loop code
-"""
-lw r4, 176(r0)
-lw r3, 177(r0)
-sub r2, r4, r1
-bez r2, 8
-sw r1, 252(r0)
-bez r0, -8
-add r1, r1, r3
-sll r0, r0, r0
-bez r0, -2
-"""
