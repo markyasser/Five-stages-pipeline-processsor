@@ -8,6 +8,7 @@
 `include "../2 - decode/control_unit.v"
 
 `include "../3 - execute/ALU.v"
+`include "../3 - execute/mux_Src_Imm.v"
 `include "../3 - execute/reg_exec_mem.v"
 
 `include "../4 - memory/memory_stage.v"
@@ -20,7 +21,8 @@ module Processor (
     input clk
 );
     reg [2:0] CCR; // flag register
-
+    reg [15:0] In_Port;
+    reg [15:0] Out_Port;
 
     // fetch stage
     reg [31:0] jumpAddress;
@@ -68,8 +70,37 @@ module Processor (
     // execute stage
     wire [15:0] ALU_Result; // ALU 16-bit Output
     wire [2:0] ccr_out; // flags register
-    ALU alu(Rs_data_execute,Imm_value_execute,control_signals_execute[13],Rd_data_execute,control_signals_execute[21],control_signals_execute[27],ALU_Result,ccr_out,clk);
-    always @(ccr_out) begin CCR = ccr_out; end
+    wire [8:0] is_alu;  // check if there is an ALU operation
+    wire [15:0] src; // ALU source
+    mux21 mux2x1(Rs_data_execute,Imm_value_execute,control_signals_execute[13],src);
+    ALU alu(src,Rd_data_execute,
+    control_signals_execute[21],
+    control_signals_execute[27],
+    control_signals_execute[26],
+    control_signals_execute[25],
+    control_signals_execute[20],
+    control_signals_execute[19],
+    control_signals_execute[18],
+    control_signals_execute[17],
+    control_signals_execute[16],
+    control_signals_execute[23],
+    control_signals_execute[24],
+    control_signals_execute[13],
+    ALU_Result,ccr_out,In_Port,Out_Port);
+
+    always @(ccr_out) begin if(
+    control_signals_execute[21] == 1 ||
+    control_signals_execute[27] == 1 ||
+    control_signals_execute[26] == 1 ||
+    control_signals_execute[25] == 1 ||
+    control_signals_execute[20] == 1 ||
+    control_signals_execute[19] == 1 ||
+    control_signals_execute[18] == 1 ||
+    control_signals_execute[17] == 1 ||
+    control_signals_execute[16] == 1 ||
+    control_signals_execute[23] == 1 ||
+    control_signals_execute[24] == 1 ||
+    control_signals_execute[13] == 1 )begin CCR = ccr_out; end end
 
     // register between execute and memory
     wire [15:0] ALU_result_mem;
@@ -93,7 +124,7 @@ module Processor (
     1'b0, //pop
     32'b0, //sp
     32'b0, //pc
-    4'b0, //counter value
+    2'b0, //counter value
     1'b0, //int signal comming from counter
     16'b0, //flag register
     dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,clk); // TODO : write push and pop and sp

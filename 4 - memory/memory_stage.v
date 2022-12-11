@@ -69,8 +69,8 @@ assign sp_pop = sp + 1;
 // MUX to select memory address in case we have memRead or memWrite
 assign sel_readOrWrite = memRead;
 assign address_readOrWrite =
-    (sel_readOrWrite == 1'b0) ? {16'b0,Rsrc_value} : //memWrite
-    (sel_readOrWrite == 1'b1) ? {16'b0,Rdst_value} : 32'bz; //memRead 
+    (sel_readOrWrite == 1'b0) ? {16'b0,Rdst_value} : //memWrite
+    (sel_readOrWrite == 1'b1) ? {16'b0,Rsrc_value} : 32'bz; //memRead 
 // MUX to select memory address in case we have push or pop
 assign sel_pushOrPop = pop;
 assign address_pushOrPop =
