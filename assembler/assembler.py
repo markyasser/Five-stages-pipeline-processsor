@@ -70,158 +70,25 @@ def assemblyToBinary(line):
             rd = regAddressMap[instructionArray[1].upper()]
         writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
     elif (len(instructionArray) == 3):
-        opcode = opcodeMap[instructionArray[0].upper()]
-        if instructionArray[1][0] == 'r':
+        if instructionArray[0].upper() == "LDM":
+            opcode = opcodeMap[instructionArray[0].upper()]
+            rd = regAddressMap[instructionArray[1].upper()]
+            imm = f'{int(instructionArray[2]):016b}'
+            writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
+            writeBinaryToFile(f_out, imm)
+        elif instructionArray[0].upper() == "SHL" or instructionArray[0].upper() == "SHR":
+            opcode = opcodeMap[instructionArray[0].upper()]
             rs = regAddressMap[instructionArray[1].upper()]
-        if instructionArray[2][0] == 'r':
-            rd = regAddressMap[instructionArray[2].upper()]
-            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+            shmnt = f'{int(instructionArray[2]):05b}'
+            writeBinaryToFile(f_out, opcode+rs+"000"+shmnt)
         else:
-            # Write immediate value
-            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
-    # if (instructionArray[0] == "mov"):
-    #     if (len(instructionArray) != 3):
-    #         return '', '', '', ''
-    #     opcode = opcodeMap[instructionArray[0].upper()]
-    #     if instructionArray[1][0] == 'r':
-    #         rd = regAddressMap[instructionArray[1].upper()]
-    #     if instructionArray[2][0] == 'r':
-    #         rs = regAddressMap[instructionArray[2].upper()]
-    #     f_out.write(opcode+rs+rd)
-    # elif (instructionArray[0] == "add"):
-    #     if (len(instructionArray) != 3):
-    #         return '', '', '', ''
-    #     opcode = opcodeMap[instructionArray[0].upper()]
-    #     if instructionArray[1][0] == 'r':
-    #         rd = regAddressMap[instructionArray[1].upper()]
-    #     if instructionArray[2][0] == 'r':
-    #         rs = regAddressMap[instructionArray[2].upper()]
-    #     f_out.write(opcode+rs+rd)
-
-    # # elif (instructionArray[0] == "sll"):
-    # #     if (len(instructionArray) != 3):
-    # #         return 0, 0, 0, 0, 0, 0
-    # #     opcode = 0
-    # #     func = 0
-    # #     rd = int(instructionArray[1][1:])
-    # #     rs = int(instructionArray[2][1:])
-    # #     rt = int(instructionArray[3][1:])
-    # elif (instructionArray[0] == "sub"):
-    #     if (len(instructionArray) != 3):
-    #         return '', '', '', ''
-    #     opcode = opcodeMap[instructionArray[0].upper()]
-    #     if instructionArray[1][0] == 'r':
-    #         rd = regAddressMap[instructionArray[1].upper()]
-    #     if instructionArray[2][0] == 'r':
-    #         rs = regAddressMap[instructionArray[2].upper()]
-    #     f_out.write(opcode+rs+rd)
-    # elif (instructionArray[0] == "and"):
-    #     if (len(instructionArray) != 3):
-    #         return '', '', '', ''
-    #     opcode = opcodeMap[instructionArray[0].upper()]
-    #     if instructionArray[1][0] == 'r':
-    #         rd = regAddressMap[instructionArray[1].upper()]
-    #     if instructionArray[2][0] == 'r':
-    #         rs = regAddressMap[instructionArray[2].upper()]
-    #     f_out.write(opcode+rs+rd)
-    # elif (instructionArray[0] == "and"):
-    #     if (len(instructionArray) != 3):
-    #         return '', '', '', ''
-    #     opcode = opcodeMap[instructionArray[0].upper()]
-    #     if instructionArray[1][0] == 'r':
-    #         rd = regAddressMap[instructionArray[1].upper()]
-    #     if instructionArray[2][0] == 'r':
-    #         rs = regAddressMap[instructionArray[2].upper()]
-    #     f_out.write(opcode+rs+rd)
-    # # elif (instructionArray[0] == "nand"):
-    # #     if (len(instructionArray) != 3):
-    # #         return 0, 0, 0, 0, 0, 0
-    # #     opcode = 0
-    # #     func = 3
-    # #     rd = int(instructionArray[1][1:])
-    # #     rs = int(instructionArray[2][1:])
-    # #     rt = int(instructionArray[3][1:])
-    # # elif (instructionArray[0] == "nor"):
-    # #     if (len(instructionArray) != 3):
-    # #         return 0, 0, 0, 0, 0, 0
-    # #     opcode = 0
-    # #     func = 4
-    # #     rd = int(instructionArray[1][1:])
-    # #     rs = int(instructionArray[2][1:])
-    # #     rt = int(instructionArray[3][1:])
-    # # elif (instructionArray[0] == "bez"):
-    # #     if (len(instructionArray) != 3):
-    # #         return 0, 0, 0, 0, 0, 0
-    # #     opcode = 1
-    # #     rt = 0
-    # #     rs = int(instructionArray[1][1:])
-    # #     imm = int(instructionArray[2])
-    # # elif (instructionArray[0] == "bnez"):
-    # #     if (len(instructionArray) != 3):
-    # #         return 0, 0, 0, 0, 0, 0
-    # #     opcode = 1
-    # #     rt = 1
-    # #     rs = int(instructionArray[1][1:])
-    # #     imm = int(instructionArray[2])
-    # # elif (instructionArray[0] == "bgez"):
-    # #     if (len(instructionArray) != 3):
-    # #         return 0, 0, 0, 0, 0, 0
-    # #     opcode = 1
-    # #     rt = 2
-    # #     rs = int(instructionArray[1][1:])
-    # #     imm = int(instructionArray[2])
-    # # elif (instructionArray[0] == "blez"):
-    # #     if (len(instructionArray) != 3):
-    # #         return 0, 0, 0, 0, 0, 0
-    # #     opcode = 1
-    # #     rt = 3
-    # #     rs = int(instructionArray[1][1:])
-    # #     imm = int(instructionArray[2])
-    # # elif (instructionArray[0] == "bgz"):
-    # #     if (len(instructionArray) != 3):
-    # #         return 0, 0, 0, 0, 0, 0
-    # #     opcode = 1
-    # #     rt = 4
-    # #     rs = int(instructionArray[1][1:])
-    # #     imm = int(instructionArray[2])
-    # # elif (instructionArray[0] == "blz"):
-    # #     if (len(instructionArray) != 3):
-    # #         return 0
-    # #     opcode = 1
-    # #     rt = 5
-    # #     rs = int(instructionArray[1][1:])
-    # #     imm = int(instructionArray[2])
-    # # elif (instructionArray[0] == "lw"):
-    # #     if (instructionArray[-1] == ''):
-    # #         instructionArray = instructionArray[0:-1]
-    # #     if (len(instructionArray) != 3 and len(instructionArray) != 4):
-    # #         return 0, 0, 0, 0, 0, 0
-    # #     opcode = 2
-    # #     rt = int(instructionArray[1][1:])
-    # #     if (len(instructionArray) == 3):
-    # #         imm = 0
-    # #         rs = int(instructionArray[2][1:])
-    # #     else:
-    # #         imm = int(instructionArray[2])
-    # #         rs = int(instructionArray[3][1:])
-    # # elif (instructionArray[0] == "sw"):
-    # #     if (instructionArray[-1] == ''):
-    # #         instructionArray = instructionArray[0:-1]
-    # #     if (len(instructionArray) != 3 and len(instructionArray) != 4):
-    # #         return 0, 0, 0, 0, 0, 0
-    # #     opcode = 3
-    # #     rt = int(instructionArray[1][1:])
-    # #     if (len(instructionArray) == 3):
-    # #         imm = 0
-    # #         rs = int(instructionArray[2][1:])
-    # #     else:
-    # #         imm = int(instructionArray[2])
-    # #         rs = int(instructionArray[3][1:])
-    # # else:
-    # #     return 0, 0, 0, 0, 0, 0
-    return opcode, rs, rd, imm
-    # pass
-
+            opcode = opcodeMap[instructionArray[0].upper()]
+            if instructionArray[1][0] == 'r':
+                rs = regAddressMap[instructionArray[1].upper()]
+            if instructionArray[2][0] == 'r':
+                rd = regAddressMap[instructionArray[2].upper()]
+                writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+    return opcode, rs, rd, shmnt,imm
 
 
 # -------------Main---------------
