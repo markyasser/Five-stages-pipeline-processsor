@@ -17,7 +17,7 @@ input clk;
 // instructions area starts from [2^5 and down to 2^20]
 reg [15:0] instMemory [0:(2 ** 20 - 1)];
 initial begin
-	$readmemb("../assembler/binary.txt", instMemory);
+	$readmemb("../assembler/binary.txt", instMemory, 2 ** 5);
 	// instMemory[2 ** 5]	   = 16'b11010_000_001_00000;	// LDM R1,Imm -> 	R1 = 0
 	// instMemory[2 ** 5 + 1] = 16'h0;						// Imm value
 	// instMemory[2 ** 5 + 2] = 16'b11010_000_010_00000;	// LDM R2,Imm -> 	R2 = 2
