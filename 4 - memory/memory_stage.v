@@ -54,6 +54,7 @@ wire [31:0]sp_pop;
 wire [31:0] address;
 wire [15:0] writeData;
 wire [15:0] writeDataInCaseOfInt;
+wire [15:0] writeDataInCaseMemOrStack;
 
 wire sel_stackOrMem;
 wire sel_pushOrPop;
@@ -88,8 +89,11 @@ assign writeDataInCaseOfInt =
     (intCounterValue == 2'b10) ? pc[16:0] :
     (intCounterValue == 2'b11) ? flagReg : 16'bz;
 // MUX to select memory write data in case we have interupt or normal operation
+assign writeDataInCaseMemOrStack =
+    (sel_stackOrMem == 1'b0) ? Rdst_value :
+    (sel_stackOrMem == 1'b1) ? Rsrc_value : 16'bz;
 assign writeData =
-    (intSignalFromCounter == 1'b0) ? Rdst_value :
+    (intSignalFromCounter == 1'b0) ? writeDataInCaseMemOrStack :
     (intSignalFromCounter == 1'b1) ? writeDataInCaseOfInt : 16'bz;
 
 DataMemory mem(address, writeData, dataFromMemoryWire, memRead, memWrite, 1'b1, clk, push);
