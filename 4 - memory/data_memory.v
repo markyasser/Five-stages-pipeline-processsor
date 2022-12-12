@@ -1,4 +1,4 @@
-module DataMemory (address, writeData, readData, read, write, CS, clk);
+module DataMemory (address, writeData, readData, read, write, CS, clk, push);
 // Address of data
 input [31:0] address;
 input [15:0] writeData;
@@ -11,12 +11,13 @@ input write;
 input CS;
 // Clock
 input clk;
+input push;
 // 16 bit word, 4KB memory
 // The data memory starts with the data area (the very first address space and down)
 // Followed by the stack area (starting from [2^11−1 and up])
 reg [15:0] dataMem [0:(2 ** 11 - 1)];
 
-always @(posedge clk,write) begin // asssuming write is a HW signal
+always @(posedge clk,write,push) begin // asssuming write is a HW signal
     // Write
 	if(CS && write && !read)
 	begin

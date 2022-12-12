@@ -125,8 +125,15 @@ module Processor (
     wire [15:0] Rd_data_mem;
     wire  memRead_mem;
     wire  memWrite_mem;
-    reg_exec_mem reg_exec_mem(clk,ALU_Result,src,Rd_data_execute,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
-    ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem);
+    wire  push_mem;
+    wire  pop_mem;
+    reg_exec_mem reg_exec_mem(
+        // input
+        clk,ALU_Result,src,Rd_data_execute,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
+        control_signals_execute[15],
+        control_signals_execute[14],
+        // output
+    ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, push_mem, pop_mem);
 
     // memory stage
     wire [15:0] dataFromMemory;
@@ -135,9 +142,8 @@ module Processor (
     wire MEMWB_memRead;
     wire MEMWB;
     MemoryStage memory_stage(ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memWrite_mem,memRead_mem,regWrite_mem,
-    1'b0, //push
-    1'b0, //pop
-    32'b0, //sp
+    push_mem, //push
+    pop_mem, //pop
     32'b0, //pc
     2'b0, //counter value
     1'b0, //int signal comming from counter

@@ -9,7 +9,6 @@ module MemoryStage (
     WB,
     push,
     pop,
-    sp,
     pc,
     intCounterValue,
     intSignalFromCounter,
@@ -35,7 +34,6 @@ input push;
 input pop;
 input clk;
 // SP of processor
-input [31:0]sp;
 input [1:0]intCounterValue;
 input intSignalFromCounter;
 input [31:0]pc;
@@ -47,12 +45,12 @@ output reg [15:0] MEMWB_ALU_result;
 output reg [2:0] MEMWB_Rdst_address;
 output reg MEMWB_memRead;
 output reg MEMWB_WB;
-reg newSP;
+reg [31:0]sp;
 reg CS;
 wire [15:0] dataFromMemoryWire;
 // wire isMemory;
-wire sp_push;
-wire sp_pop;
+wire [31:0]sp_push;
+wire [31:0]sp_pop;
 wire [31:0] address;
 wire [15:0] writeData;
 wire [15:0] writeDataInCaseOfInt;
@@ -63,7 +61,9 @@ wire sel_readOrWrite;
 wire [31:0] address_pushOrPop;
 wire [31:0] address_readOrWrite;
 // assign isMemory = memRead | memWrite;
-
+initial begin
+    sp = 32'b11111111111111111111111111111111;
+end
 assign sp_push = sp;
 assign sp_pop = sp + 1;
 // MUX to select memory address in case we have memRead or memWrite
@@ -89,11 +89,13 @@ assign writeDataInCaseOfInt =
     (intCounterValue == 2'b11) ? flagReg : 16'bz;
 // MUX to select memory write data in case we have interupt or normal operation
 assign writeData =
-    (intSignalFromCounter == 1'b0) ? Rsrc_value :
+    (intSignalFromCounter == 1'b0) ? Rdst_value :
     (intSignalFromCounter == 1'b1) ? writeDataInCaseOfInt : 16'bz;
 
-DataMemory mem(address, writeData, dataFromMemoryWire, memRead, memWrite, 1'b1, clk);
-always@(*) begin    dataFromMemory = dataFromMemoryWire;end
+DataMemory mem(address, writeData, dataFromMemoryWire, memRead, memWrite, 1'b1, clk, push);
+always@(*) begin
+    dataFromMemory = dataFromMemoryWire;
+end
 always @(posedge clk) begin
     // Pass EXMEM buffer data to MEMWB buffer
     MEMWB_ALU_result = ALU_result;
@@ -103,17 +105,17 @@ always @(posedge clk) begin
     // Data memory
     // if isMemory = 1, set CS (chip select) of memory to 1, else CS = 0
     //CS = 1;
+   
+end
+always @(negedge clk) begin
     // update sp in case of push or pop
     if (sel_stackOrMem == 0) begin
-        if (push) begin
-            newSP = sp - 1;
+        if (push & !pop) begin
+            sp = sp - 1;
         end
-        else begin
-            newSP = sp_pop;
+        else if (!push & pop) begin
+            sp = sp_pop;
         end
-    end
-    else begin
-        newSP = sp;
     end
 end
 endmodule

@@ -19,7 +19,6 @@ add wave -position insertpoint  \
 sim:/Processor/memory_stage/mem/dataMem
 
 
-
 # cycle 1 
 add wave -position insertpoint  \
 sim:/Processor/Fetch/PC
@@ -49,9 +48,8 @@ sim:/Processor/WriteBack/dataFromMemory
 add wave -position insertpoint  \
 sim:/Processor/registers/write_enable
 add wave -position insertpoint  \
-sim:/Processor/memory_stage/mem/write
-
-
+sim:/Processor/memory_stage/mem/write \
+sim:/Processor/memory_stage/mem/read
 
 force -freeze sim:/Processor/clk 1 0, 0 {25 ps} -r 50
 force -freeze sim:/Processor/RESET 1 0
