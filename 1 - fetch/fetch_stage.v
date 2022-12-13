@@ -29,28 +29,14 @@ module FetchStage (
     opCode,
     LDM_signal,
     Inst_as_Imm_value,
-    clk,
-    reset,
-    interupt,
-    return,
-    branchSignal,
-    PCFromPop
+    clk
 );
 // input
 input [31:0] intRegAddress;
 input [31:0] jumpAddress;
-<<<<<<< HEAD
 input enable;
 input clk;
-=======
-input [31:0] PCFromPop;
->>>>>>> 630cf91056cad6d43f34219aa3f5a9ddc56089a2
 input LDM_signal;
-input clk;
-input reset;
-input interupt;
-input return;
-input branchSignal;
 // IF/ID
 output reg [31:0] nextInstructionAddress;
 output reg isImmediate;
@@ -67,15 +53,6 @@ reg [15:0] writeData;
 //     begin
 //     	nextInstructionAddress <= PC + 32'h00000001;
 //     end
-// Selectors
-// Mux1
-wire [31:0]nextPCOrBranch;
-// Mux2
-wire[31:0] returnOrMux1;
-// Mux3
-wire [31:0]intOrMux2;
-// Mux4
-wire [31:0]rstOrMux3;
 
 reg CS;
 wire [15:0] dataFromMemoryWire;
@@ -83,7 +60,7 @@ wire [15:0] dataFromMemoryWire;
 reg ldm;
 // ----------------for testing--------------------
 initial begin
-    PC = 32'b00100000;
+    nextInstructionAddress = 32'b00100000;
     ldm = 0;
 end
 // -----------------------------------------------
@@ -94,19 +71,6 @@ wire [15:0] mux_out;
 assign mux_out = ldm == 1'b1 ? 16'b0 : dataFromMemoryWire;
 
 assign Inst_as_Imm_value = dataFromMemoryWire;
-
-assign nextPCOrBranch = 
-    (branchSignal == 1'b0) ? PC + 32'b1 :
-    (branchSignal == 1'b1) ? jumpAddress : 32'bz;
-assign returnOrMux1 = 
-    (return == 1'b0) ? nextPCOrBranch :
-    (return == 1'b1) ? PCFromPop : 32'bz;
-assign intOrMux2 = 
-    (interupt == 1'b0) ? returnOrMux1 :
-    (interupt == 1'b1) ? 32'b0 : 32'bz;
-assign rstOrMux3 = 
-    (reset == 1'b0) ? intOrMux2 :
-    (reset == 1'b1) ? 32'b00100000 : 32'bz;
 
 always @(*)begin 
     if(LDM_signal == 1)
@@ -126,15 +90,12 @@ end
 always @(posedge clk) begin
     // Pass data to IF/ID buffer
     // TODO: get it from ALU
-    //PC = nextInstructionAddress;
+    PC = nextInstructionAddress;
     nextInstructionAddress <= PC + 32'h1;
     
     // CS always 1
     CS = 1;
     // isImmediate = dataFromMemoryWire[0];
     
-end
-always @(negedge clk) begin
-     PC = rstOrMux3;
 end
 endmodule
