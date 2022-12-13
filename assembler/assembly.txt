@@ -2,5 +2,5 @@ LDM r1, 5
 STD r1, r3
 LDD r3, r2
 add r2, r1
-add r5, r6
-add r4, r7
+add r1, r6
+add r1, r7

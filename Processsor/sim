@@ -53,6 +53,7 @@ sim:/Processor/memory_stage/mem/read
 add wave -position insertpoint  \
 sim:/Processor/Fetch/enable
 
+
 force -freeze sim:/Processor/clk 1 0, 0 {25 ps} -r 50
 force -freeze sim:/Processor/RESET 1 0
 run
