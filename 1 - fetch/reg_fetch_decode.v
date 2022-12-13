@@ -1,5 +1,6 @@
 module reg_fetch_decode(
     input clk,
+    input enable,
     input [31:0] Next_inst_addr,
     input [4:0] opcode,
     input [2:0] Rs,
@@ -18,11 +19,13 @@ module reg_fetch_decode(
     end
     always @ (negedge clk) // write at the -ve edge
     begin
-        register[31:0] <= Next_inst_addr;
-        register[36:32] <= opcode;
-        register[39:37] <= Rs;
-        register[42:40] <= Rd;
-        register[47:43] <= shmnt;
+        if(enable == 1)begin
+            register[31:0] <= Next_inst_addr;
+            register[36:32] <= opcode;
+            register[39:37] <= Rs;
+            register[42:40] <= Rd;
+            register[47:43] <= shmnt;
+    end
     end
 
     always @ (posedge clk) // read at the +ve edge

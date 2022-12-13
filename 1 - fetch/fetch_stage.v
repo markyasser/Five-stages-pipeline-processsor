@@ -18,6 +18,7 @@
 // endmodule
 
 module FetchStage (
+    enable,
     intRegAddress,
     jumpAddress,
     isImmediate,
@@ -33,6 +34,7 @@ module FetchStage (
 // input
 input [31:0] intRegAddress;
 input [31:0] jumpAddress;
+input enable;
 input clk;
 input LDM_signal;
 // IF/ID
@@ -88,9 +90,9 @@ end
 always @(posedge clk) begin
     // Pass data to IF/ID buffer
     // TODO: get it from ALU
-    
     PC = nextInstructionAddress;
     nextInstructionAddress <= PC + 32'h1;
+    
     // CS always 1
     CS = 1;
     // isImmediate = dataFromMemoryWire[0];

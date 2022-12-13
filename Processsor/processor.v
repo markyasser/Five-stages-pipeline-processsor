@@ -5,6 +5,8 @@
 `include "../2 - decode/instruction_decode.v"
 `include "../2 - decode/reg_decode_exec.v"
 `include "../2 - decode/reg_file.v"
+`include "../2 - decode/HDU.v"
+`include "../2 - decode/cu_mux.v"
 `include "../2 - decode/control_unit.v"
 
 `include "../3 - execute/ALU.v"
@@ -37,7 +39,8 @@ module Processor (
     wire [4:0] opCode;
     wire [29:0] control_signals; // will be initialized in decode stage
     wire [15:0] Inst_as_Imm_value;
-    FetchStage Fetch(32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
+    wire reg_fetch_decode_enable;
+    FetchStage Fetch(reg_fetch_decode_enable,32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
     
     // register between fetch and decode
     wire [31:0] Next_inst_addr_decode;
@@ -45,19 +48,26 @@ module Processor (
     wire [2:0]  Rs_decode;
     wire [2:0]  Rd_decode;
     wire [4:0]  shmnt_decode;
-    reg_fetch_decode reg_fetch_decode(clk,nextInstructionAddress,opCode,Rs,Rd,SHMNT,
+    
+    reg_fetch_decode reg_fetch_decode(clk,reg_fetch_decode_enable,nextInstructionAddress,opCode,Rs,Rd,SHMNT,
     Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode);
 
     // decode stage
     wire [15:0] WB_data;    // will be initiallized from write back (down)
     wire [2:0] WB_address;  // will be initiallized from write back (down)
     wire regWrite_WB;       // will be initiallized from write back (down)
+    wire [2:0] Rd_execute;
+    wire [29:0] control_signals_execute;
     reg rst;
     // reg rstAll;
     wire [15:0] Rs_data;
     wire [15:0] Rd_data;
     
-    control_unit CU(opcode_decode,control_signals);
+    wire CU_mux_selector;
+    HDU hdu(Rs_decode,Rd_decode,Rd_execute,control_signals_execute[14],control_signals_execute[2],reg_fetch_decode_enable,CU_mux_selector);
+    wire [4:0]cu_opcode;
+    cu_mux cu_mux(opcode_decode,CU_mux_selector,cu_opcode);
+    control_unit CU(cu_opcode,control_signals);
     RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,RESET,WB_address); 
     
     // register between decode and execute
@@ -66,8 +76,7 @@ module Processor (
     wire [15:0]Rs_data_execute;
     wire [2:0]Rs_execute;
     wire [15:0]Rd_data_execute;
-    wire [2:0] Rd_execute;
-    wire [29:0] control_signals_execute;
+    
 
     reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,
     Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute);
