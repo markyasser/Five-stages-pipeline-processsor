@@ -126,7 +126,7 @@ end
 always @(posedge clk) begin
     // Pass data to IF/ID buffer
     // TODO: get it from ALU
-    PC = nextInstructionAddress;
+    //PC = nextInstructionAddress;
     nextInstructionAddress <= PC + 32'h1;
     
     // CS always 1
