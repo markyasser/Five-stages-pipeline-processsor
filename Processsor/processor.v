@@ -37,7 +37,13 @@ module Processor (
     wire [4:0] opCode;
     wire [29:0] control_signals; // will be initialized in decode stage
     wire [15:0] Inst_as_Imm_value;
-    FetchStage Fetch(32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
+    FetchStage Fetch(32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk,
+    1'b0,
+    1'b0,
+    1'b0,
+    1'b0,
+    32'b0
+    );
     
     // register between fetch and decode
     wire [31:0] Next_inst_addr_decode;
