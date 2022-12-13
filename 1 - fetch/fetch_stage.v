@@ -34,6 +34,7 @@ module FetchStage (
     interupt,
     return,
     branchSignal,
+    unconditionalJump,
     PCFromPop
 );
 // input
@@ -41,6 +42,7 @@ input [31:0] intRegAddress;
 input [31:0] jumpAddress;
 input [31:0] PCFromPop;
 input LDM_signal;
+input unconditionalJump;
 input clk;
 input enable;
 input reset;
@@ -82,20 +84,20 @@ reg [31:0]rstOrMux3reg;
 initial begin
     // PC = 32'b00100000;
     ldm = 0;
-    rstOrMux3reg = 32'b00100000;
+    rstOrMux3reg = 32'b00011111;
 end
 // -----------------------------------------------
 
 // Instruction memory
 InstructionMemory mem(PC, writeData, dataFromMemoryWire, 1'b1, 1'b0, CS, clk);
 wire [15:0] mux_out;
-assign mux_out = ldm == 1'b1 ? 16'b0 : dataFromMemoryWire;
+assign mux_out = (ldm | branchSignal | unconditionalJump)? 16'b0 : dataFromMemoryWire;
 
 assign Inst_as_Imm_value = dataFromMemoryWire;
 
 assign nextPCOrBranch = 
-    (branchSignal == 1'b0) ? rstOrMux3reg + 32'b1 :
-    (branchSignal == 1'b1) ? jumpAddress : 32'bz;
+    ((branchSignal | unconditionalJump) == 1'b0) ? rstOrMux3reg + 32'b1 :
+    ((branchSignal | unconditionalJump) == 1'b1) ? jumpAddress : 32'bz;
 assign returnOrMux1 = 
     (return == 1'b0) ? nextPCOrBranch :
     (return == 1'b1) ? PCFromPop : 32'bz;
@@ -122,19 +124,10 @@ always @(*)begin
 end
 
 always @(posedge clk, negedge enable) begin
-    // Pass data to IF/ID buffer
-    // TODO: get it from ALU
     if(enable == 1) begin 
-        PC = rstOrMux3reg;
         rstOrMux3reg = rstOrMux3;
+        PC = rstOrMux3reg;
     end
-    // PC = nextInstructionAddress;
-    // nextInstructionAddress <= PC + 32'h1;
-    // CS always 1
     CS = 1;
-    // isImmediate = dataFromMemoryWire[0];
-    
 end
-// always @(negedge clk) begin
-// end
 endmodule

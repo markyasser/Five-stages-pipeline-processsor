@@ -41,12 +41,30 @@ module Processor (
     wire [15:0] Inst_as_Imm_value;
     wire reg_fetch_decode_enable;
     
+    // if jump is true of false
+    wire [15:0] dst;
+    wire [29:0] control_signals_execute;
+    wire OrCCR;
+    reg branchResult;
+    reg unconditionalJump;
+    
+    assign OrCCR = CCR[0] | CCR[1] | CCR[2];
+    initial begin
+        branchResult = 0; 
+        unconditionalJump = 0; 
+    end
+    always@(*)begin 
+        branchResult = OrCCR & control_signals_execute[0];
+        unconditionalJump = control_signals_execute[7];
+    end
+
     //FetchStage Fetch(reg_fetch_decode_enable,32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
-    FetchStage Fetch(reg_fetch_decode_enable,32'b0,{16'b0,16'b0},isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk,
+    FetchStage Fetch(reg_fetch_decode_enable,32'b0,{16'b0,dst},isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk,
     1'b0,
     1'b0,
     1'b0,
-    1'b0,
+    branchResult,
+    unconditionalJump,
     32'b0
     );
 
@@ -65,16 +83,17 @@ module Processor (
     wire [2:0] WB_address;  // will be initiallized from write back (down)
     wire regWrite_WB;       // will be initiallized from write back (down)
     wire [2:0] Rd_execute;
-    wire [29:0] control_signals_execute;
     reg rst;
     // reg rstAll;
     wire [15:0] Rs_data;
     wire [15:0] Rd_data;
     
-    wire CU_mux_selector;
-    HDU hdu(Rs_decode,Rd_decode,Rd_execute,control_signals_execute[14],control_signals_execute[2],reg_fetch_decode_enable,CU_mux_selector);
+    wire HDU_mux_selector;
+    HDU hdu(Rs_decode,Rd_decode,Rd_execute,control_signals_execute[14],control_signals_execute[2],reg_fetch_decode_enable,HDU_mux_selector);
     wire [4:0]cu_opcode;
-    cu_mux cu_mux(opcode_decode,CU_mux_selector,cu_opcode);
+    wire cu_mux_selector;
+    assign cu_mux_selector = HDU_mux_selector | branchResult | unconditionalJump;
+    cu_mux cu_mux(opcode_decode,cu_mux_selector,cu_opcode);
     control_unit CU(cu_opcode,control_signals);
     RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,RESET,WB_address); 
     
@@ -105,7 +124,6 @@ module Processor (
     FU forwaringUnit(Rs_execute,Rd_execute,Rd_mem,WB_address,regWrite_mem,regWrite_WB,selectorFU_src,selectorFU_dst);
 
     wire [15:0] src;
-    wire [15:0] dst;
     mux32 muxForwarding_Src(src_from_mux,ALU_result_mem,WB_data,selectorFU_src,src); 
     mux32 muxForwarding_Dst(Rd_data_execute,ALU_result_mem,WB_data,selectorFU_dst,dst); 
     ALU alu(src,dst,
@@ -146,7 +164,7 @@ module Processor (
     wire  pop_mem;
     reg_exec_mem reg_exec_mem(
         // input
-        clk,ALU_Result,src,Rd_data_execute,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
+        clk,ALU_Result,src,dst,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
         control_signals_execute[15],
         control_signals_execute[14],
         // output
@@ -160,10 +178,10 @@ module Processor (
     wire MEMWB;
     MemoryStage memory_stage(ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memWrite_mem,memRead_mem,regWrite_mem,
     push_mem, //push
-    pop_mem, //pop
-    32'b0, //pc
-    2'b0, //counter value
-    1'b0, //int signal comming from counter
+    pop_mem,  //pop
+    32'b0,    //pc
+    2'b0,  //counter value
+    1'b0,  //int signal comming from counter
     16'b0, //flag register
     dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,clk); // TODO : write push and pop and sp
 
