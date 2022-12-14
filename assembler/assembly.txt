@@ -1,7 +1,16 @@
-LDM r2, 1
-push r2
-pop r3
-jmp r3
-add r1,r2
-add r1,r2
-add r1,r2
+LDM R1, 3
+LDM R2, 2
+LDM R3, 6
+STD R1, R6
+inc R6
+STD R2, R6
+inc R6
+STD R3, R6
+LDM R7, 44
+LDD R6, R1
+ADD R1, R5
+dec R6
+jz R7
+NOP
+NOP
+NOP
