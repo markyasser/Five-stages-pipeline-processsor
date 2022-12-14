@@ -1,12 +1,7 @@
-LDM r3, 1
-NOP
-NOP
-push r3
-#NOP
-#LDM r7, 1
-#add r7, r3
-#add r3, r2
-#STD r3, r5 
-# mem[0] = 1
-#LDD r5, r1 
-## r1 = 2
+LDM r2, 1
+push r2
+pop r3
+jmp r3
+add r1,r2
+add r1,r2
+add r1,r2
