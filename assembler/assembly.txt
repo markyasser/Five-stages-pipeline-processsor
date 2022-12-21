@@ -1,16 +1,8 @@
-LDM R1, 3
-LDM R2, 2
-LDM R3, 6
-STD R1, R6
-inc R6
-STD R2, R6
-inc R6
-STD R3, R6
-LDM R7, 44
-LDD R6, R1
-ADD R1, R5
+LDM R7, 35
+LDM R6, 5
+LDM R5, 1
+STD R6, R1
+inc R1
 dec R6
-jz R7
-NOP
-NOP
-NOP
+SUB R6, R5
+jn R7
