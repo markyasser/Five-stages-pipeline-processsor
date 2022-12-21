@@ -18,10 +18,13 @@ sim:/Processor/CCR
 add wave -position insertpoint  \
 sim:/Processor/memory_stage/mem/dataMem
 
-
-# cycle 1 
+# PC and SP
 add wave -position insertpoint  \
 sim:/Processor/Fetch/PC
+add wave -position insertpoint  \
+sim:/Processor/memory_stage/sp
+
+# cycle 1 
 add wave -position insertpoint  \
 sim:/Processor/Fetch/dataFromMemoryWire
 
