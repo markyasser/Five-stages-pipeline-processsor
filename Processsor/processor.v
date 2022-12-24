@@ -139,10 +139,10 @@ module Processor (
     control_signals_execute[17],
     control_signals_execute[16],
     control_signals_execute[23],
-    control_signals_execute[24],
     control_signals_execute[13],
-    ALU_Result,ccr_out,In_Port,Out_Port);
+    ALU_Result,ccr_out,In_Port);
 
+    // write to OUT port
     wire [15:0] dst_to_out_port;
     assign  dst_to_out_port = dst;
     always @(dst_to_out_port)begin 
