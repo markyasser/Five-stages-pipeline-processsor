@@ -23,11 +23,13 @@
 
 module Processor (
     input clk,
-    input RESET
+    input reg [15:0] In_Port,
+    input RESET,
+    output reg [15:0] Out_Port
 );
     reg [2:0] CCR; // flag register
-    reg [15:0] In_Port;
-    reg [15:0] Out_Port;
+    // reg [15:0] In_Port;
+    // reg [15:0] Out_Port;
 
     // fetch stage
     reg [31:0] jumpAddress;
@@ -140,8 +142,14 @@ module Processor (
     control_signals_execute[24],
     control_signals_execute[13],
     ALU_Result,ccr_out,In_Port,Out_Port);
-    always @(control_signals_execute[24])begin 
-        Out_Port = ALU_Result;
+
+    wire [15:0] dst_to_out_port;
+    assign  dst_to_out_port = dst;
+    always @(dst_to_out_port)begin 
+        if(control_signals_execute[24] == 1)begin
+
+        Out_Port = dst_to_out_port;
+        end
     end
     always @(ccr_out) begin if(
     control_signals_execute[21] == 1 ||

@@ -74,9 +74,12 @@ add wave -position insertpoint  \
 sim:/Processor/unconditionalJump
 add wave -position insertpoint  \
 sim:/Processor/dst
+add wave -position insertpoint  \
+sim:/Processor/control_signals_execute[24]
 
 force -freeze sim:/Processor/clk 1 0, 0 {25 ps} -r 50
 force -freeze sim:/Processor/RESET 1 0
+force -freeze sim:/Processor/In_Port 1010 0
 run
 force -freeze sim:/Processor/RESET 0 1
 run

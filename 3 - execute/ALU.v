@@ -33,7 +33,7 @@ module ALU(Src,Dst,ALU_ADD,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND,ALU_OR,ALU_SH
     assign ALU_Result = 
     (ALU_ADD == 1'b1)? Src + Dst: // Addition    
     (ALU_NOT == 1'b1)? ~(Dst) : // NOT    
-    (ALU_OUT == 1'b1)? Src :    // OUT
+    (ALU_OUT == 1'b1)? Dst :    // OUT
     (ALU_INC == 1'b1) ? Dst + 1:
     (ALU_DEC == 1'b1) ? Dst - 1:
     (ALU_SUB == 1'b1) ? Dst - Src:
