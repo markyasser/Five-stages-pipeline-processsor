@@ -6,23 +6,36 @@ sim:/Processor/clk
 add wave -position insertpoint  \
 sim:/Processor/RESET
 
-# show internal registers
-add wave -position insertpoint  \
-sim:/Processor/registers/regFile
-
-# show flag register
-add wave -position insertpoint  \
-sim:/Processor/CCR
-
 # show data memory 
 add wave -position insertpoint  \
 sim:/Processor/memory_stage/mem/dataMem
+
+# show internal registers
+add wave -position insertpoint  \
+sim:/Processor/registers/regFile
 
 # PC and SP
 add wave -position insertpoint  \
 sim:/Processor/Fetch/PC
 add wave -position insertpoint  \
 sim:/Processor/memory_stage/sp
+
+# show flag register
+add wave -position insertpoint  \
+sim:/Processor/CCR
+
+# show out port
+add wave -position insertpoint  \
+sim:/Processor/Out_Port
+
+# show inport
+add wave -position insertpoint  \
+sim:/Processor/In_Port
+
+
+
+###---------------PIPELINING--------------###
+
 
 # cycle 1 
 add wave -position insertpoint  \

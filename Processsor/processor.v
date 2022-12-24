@@ -140,7 +140,9 @@ module Processor (
     control_signals_execute[24],
     control_signals_execute[13],
     ALU_Result,ccr_out,In_Port,Out_Port);
-
+    always @(control_signals_execute[24])begin 
+        Out_Port = ALU_Result;
+    end
     always @(ccr_out) begin if(
     control_signals_execute[21] == 1 ||
     control_signals_execute[27] == 1 ||
@@ -151,8 +153,6 @@ module Processor (
     control_signals_execute[18] == 1 ||
     control_signals_execute[17] == 1 ||
     control_signals_execute[16] == 1 ||
-    control_signals_execute[23] == 1 ||
-    control_signals_execute[24] == 1 ||
     control_signals_execute[13] == 1 )begin CCR = ccr_out; end end
 
     // register between execute and memory
