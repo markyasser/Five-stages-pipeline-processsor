@@ -119,7 +119,7 @@ always @(posedge clk) begin
     //CS = 1;
    
 end
-always @(posedge clk) begin
+always @(negedge clk) begin
     // update sp in case of push or pop
     if (sel_stackOrMem == 0) begin
         if (push & !pop) begin
