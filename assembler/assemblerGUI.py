@@ -102,9 +102,9 @@ def assemblyToBinary(f_out, line):
             writeBinaryToFile(f_out, imm)
         elif instructionArray[0].upper() == "SHL" or instructionArray[0].upper() == "SHR":
             opcode = opcodeMap[instructionArray[0].upper()]
-            rs = regAddressMap[instructionArray[1].upper()]
+            rd = regAddressMap[instructionArray[1].upper()]
             shmnt = f'{int(instructionArray[2]):05b}'
-            writeBinaryToFile(f_out, opcode+rs+"000"+shmnt)
+            writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
         else:
             opcode = opcodeMap[instructionArray[0].upper()]
             if instructionArray[1][0] == 'r':
