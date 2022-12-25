@@ -35,7 +35,8 @@ module FetchStage (
     return,
     branchSignal,
     unconditionalJump,
-    PCFromPop
+    PCFromPop,
+    PC_of_cpu
 );
 // input
 input [31:0] intRegAddress;
@@ -57,6 +58,7 @@ output reg [2:0] Rd;
 output reg [2:0] Rs;
 output reg [4:0] opCode;
 output reg [15:0] Inst_as_Imm_value;
+output reg [31:0] PC_of_cpu;
 // TODO: make a mux and set PC value from MUX
 // TODO: make ALU to inrement PC by 1 ---> OR 2 ?
 reg [31:0] PC;
@@ -107,7 +109,7 @@ assign intOrMux2 =
 assign rstOrMux3 = 
     (reset == 1'b0) ? intOrMux2 :
     (reset == 1'b1) ? 32'b00100000 : 32'bz;
-
+assign PC_of_cpu = PC;
 always @(*)begin 
     if(LDM_signal == 1)
     begin 

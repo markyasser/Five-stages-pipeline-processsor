@@ -69,5 +69,9 @@ sim:/ProcessorTb/cpu/memory_stage/mem/write \
 sim:/ProcessorTb/cpu/memory_stage/mem/read
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/branchResult
+add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/memory_stage/shmnt_mem
+add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/memory_stage/writeData 
 
 run

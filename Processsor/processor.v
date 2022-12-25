@@ -28,6 +28,7 @@ module Processor (
     output reg [15:0] Out_Port
 );
     reg [2:0] CCR; // flag register
+    reg [31:0] PC; // PC
     // reg [15:0] In_Port;
     // reg [15:0] Out_Port;
 
@@ -59,7 +60,7 @@ module Processor (
         branchResult = OrCCR & control_signals_execute[0];
         unconditionalJump = control_signals_execute[7];
     end
-
+    wire [31:0] PC_wire;
     //FetchStage Fetch(reg_fetch_decode_enable,32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
     FetchStage Fetch(reg_fetch_decode_enable,32'b0,{16'b0,dst},isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk,
     reset,
@@ -67,18 +68,20 @@ module Processor (
     1'b0,
     branchResult,
     unconditionalJump,
-    32'b0
+    32'b0,
+    PC_wire
     );
-
+    always @(*) begin PC = PC_wire; end
     // register between fetch and decode
     wire [31:0] Next_inst_addr_decode;
     wire [4:0]  opcode_decode;
     wire [2:0]  Rs_decode;
     wire [2:0]  Rd_decode;
     wire [4:0]  shmnt_decode;
+    wire [31:0]  pc_decode;
     
-    reg_fetch_decode reg_fetch_decode(clk,reg_fetch_decode_enable,nextInstructionAddress,opCode,Rs,Rd,SHMNT,
-    Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode);
+    reg_fetch_decode reg_fetch_decode(clk,reg_fetch_decode_enable,nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,
+    Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode,pc_decode);
 
     // decode stage
     wire [15:0] WB_data;    // will be initiallized from write back (down)
@@ -106,9 +109,9 @@ module Processor (
     wire [2:0]Rs_execute;
     wire [15:0]Rd_data_execute;
     
-
-    reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,
-    Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute);
+    wire [31:0] PC_exec;
+    reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,pc_decode,
+    Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute,PC_exec);
 
     // execute stage
     wire [15:0] ALU_Result; // ALU 16-bit Output
@@ -166,17 +169,21 @@ module Processor (
     // register between execute and memory
     wire [15:0] Rs_data_mem;
     wire [15:0] Rd_data_mem;
+    wire [15:0] pc_mem;
     wire  memRead_mem;
     wire  memWrite_mem;
     wire  push_mem;
     wire  pop_mem;
+    wire [1:0]shmnt_mem;
     reg_exec_mem reg_exec_mem(
         // input
         clk,ALU_Result,src,dst,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
         control_signals_execute[15],
         control_signals_execute[14],
+        shmnt_execute[1:0],
+        PC_exec[15:0], // pc
         // output
-    ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, push_mem, pop_mem);
+    ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, push_mem, pop_mem,shmnt_mem,pc_mem);
 
     // memory stage
     wire [15:0] dataFromMemory;
@@ -184,13 +191,13 @@ module Processor (
     wire [2:0] MEMWB_Rdst_address;
     wire MEMWB_memRead;
     wire MEMWB;
-    MemoryStage memory_stage(ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memWrite_mem,memRead_mem,regWrite_mem,
+    MemoryStage memory_stage(shmnt_mem,ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memWrite_mem,memRead_mem,regWrite_mem,
     push_mem, //push
     pop_mem,  //pop
-    32'b0,    //pc
+    pc_mem,    //pc
     2'b0,  //counter value
     1'b0,  //int signal comming from counter
-    16'b0, //flag register
+    CCR, //flag register
     dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,clk); // TODO : write push and pop and sp
 
     // register between memory and write back

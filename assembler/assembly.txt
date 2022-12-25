@@ -1,8 +1,0 @@
-LDM R7, 35
-LDM R6, 5
-LDM R5, 1
-STD R6, R1
-inc R1
-dec R6
-SUB R6, R5
-jn R7

@@ -1,5 +1,6 @@
 module MemoryStage (
     // ALU_zeroFlag,
+    shmnt_mem,
     ALU_result,
     Rsrc_value,
     Rdst_value,
@@ -22,6 +23,7 @@ module MemoryStage (
     // TODO: output new PC
 );
 // EXMEM input
+input [1:0] shmnt_mem;
 input [15:0] ALU_result;
 input [15:0] Rsrc_value;
 input [15:0] Rdst_value;
@@ -36,8 +38,8 @@ input clk;
 // SP of processor
 input [1:0]intCounterValue;
 input intSignalFromCounter;
-input [31:0]pc;
-input [15:0]flagReg;
+input [15:0]pc;
+input [2:0]flagReg;
 // MEMWB
 // Read data
 output reg [15:0] dataFromMemory;
@@ -52,6 +54,7 @@ wire [15:0] dataFromMemoryWire;
 wire [31:0]sp_push;
 wire [31:0]sp_pop;
 wire [31:0] address;
+wire [15:0] writeData_beforefinal;
 wire [15:0] writeData;
 wire [15:0] writeDataInCaseOfInt;
 wire [15:0] writeDataInCaseMemOrStack;
@@ -92,9 +95,14 @@ assign writeDataInCaseOfInt =
 assign writeDataInCaseMemOrStack =
     (sel_stackOrMem == 1'b0) ? Rdst_value :
     (sel_stackOrMem == 1'b1) ? Rsrc_value : 16'bz;
-assign writeData =
+
+assign writeData_beforefinal =
     (intSignalFromCounter == 1'b0) ? writeDataInCaseMemOrStack :
     (intSignalFromCounter == 1'b1) ? writeDataInCaseOfInt : 16'bz;
+
+assign writeData =  (shmnt_mem == 2'b00)? writeData_beforefinal:
+                    (shmnt_mem == 2'b01)? pc:
+                    (shmnt_mem == 2'b10)? {13'b0,flagReg} : 16'bz;
 
 DataMemory mem(address, writeData, dataFromMemoryWire, memRead, memWrite, 1'b1, clk, push);
 always@(*) begin
@@ -111,7 +119,7 @@ always @(posedge clk) begin
     //CS = 1;
    
 end
-always @(negedge clk) begin
+always @(posedge clk) begin
     // update sp in case of push or pop
     if (sel_stackOrMem == 0) begin
         if (push & !pop) begin
