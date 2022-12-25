@@ -86,11 +86,11 @@ assign address =
     (sel_stackOrMem == 1'b0) ? address_pushOrPop :
     (sel_stackOrMem == 1'b1) ? address_readOrWrite : 32'bz;
 // MUX to select memory write data in case of interupt
-assign writeDataInCaseOfInt =
-    (intCounterValue == 2'b00) ? Rsrc_value :
-    (intCounterValue == 2'b01) ? pc[31:16] :
-    (intCounterValue == 2'b10) ? pc[16:0] :
-    (intCounterValue == 2'b11) ? flagReg : 16'bz;
+// assign writeDataInCaseOfInt =
+//     (intCounterValue == 2'b00) ? Rsrc_value :
+//     (intCounterValue == 2'b01) ? pc[31:16] :
+//     (intCounterValue == 2'b10) ? pc[16:0] :
+//     (intCounterValue == 2'b11) ? flagReg : 16'bz;
 // MUX to select memory write data in case we have interupt or normal operation
 assign writeDataInCaseMemOrStack =
     (sel_stackOrMem == 1'b0) ? Rdst_value :
