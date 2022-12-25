@@ -68,14 +68,6 @@ add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/memory_stage/mem/write \
 sim:/ProcessorTb/cpu/memory_stage/mem/read
 add wave -position insertpoint  \
-sim:/ProcessorTb/cpu/Fetch/enable
-add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/branchResult
-add wave -position insertpoint  \
-sim:/ProcessorTb/cpu/unconditionalJump
-add wave -position insertpoint  \
-sim:/ProcessorTb/cpu/dst
-add wave -position insertpoint  \
-sim:/ProcessorTb/cpu/Fetch/CS
 
 run

@@ -20,10 +20,11 @@ In_Port = 32'b1010;
 reset = 0;
 
 
-#149
-reset = 1;
-#1
-reset = 0;
+// #149
+// reset = 1;
+// #1
+// reset = 0;
+
 end
 
 always #25 clk =~ clk;
