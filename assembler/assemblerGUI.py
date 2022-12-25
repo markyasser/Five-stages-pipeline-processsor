@@ -41,6 +41,9 @@ regAddressMap = {
     "R5": "101",
     "R6": "110",
     "R7": "111",
+    "PC": "00000",
+    "PCL": "00001",
+    "PCH": "00010",
 }
 
 
@@ -70,9 +73,19 @@ def assemblyToBinary(f_out, line):
         writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
     if (len(instructionArray) == 2):
         opcode = opcodeMap[instructionArray[0].upper()]
-        if instructionArray[1][0] == 'r':
+        if instructionArray[0].upper() == "CALL":
+            opcode = opcodeMap["PUSH"]
+            shmnt = regAddressMap["PCL"]
+            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+            shmnt = regAddressMap["PCH"]
+            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+            opcode = opcodeMap["JMP"]
             rd = regAddressMap[instructionArray[1].upper()]
-        writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+            shmnt = "00000"
+            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+        elif instructionArray[1][0] == 'r':
+            rd = regAddressMap[instructionArray[1].upper()]
+            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
     elif (len(instructionArray) == 3):
         if instructionArray[0].upper() == "LDM":
             opcode = opcodeMap[instructionArray[0].upper()]
