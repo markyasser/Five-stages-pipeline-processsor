@@ -18,6 +18,7 @@ input clk;
 reg [15:0] instMemory [0:(2 ** 20 - 1)];
 initial begin
 	$readmemb("../assembler/binary.txt", instMemory, 2 ** 5);
+	// $readmemb("D:/CMP/third_Year/first_Semester/computer architecture/project/Five-stages-pipeline-processsor/assembler/binary.txt", instMemory, 2 ** 5);
 end
 always @(posedge clk) begin
     // Write

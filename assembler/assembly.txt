@@ -1,0 +1,4 @@
+inc R1
+inc R1
+add R1,R2
+Add R2,R3
