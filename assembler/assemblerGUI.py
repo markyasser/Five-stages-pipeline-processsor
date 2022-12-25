@@ -1,5 +1,5 @@
 import re
-from tkinter import RIGHT, Y, Menu, Scrollbar, Text, Tk, Toplevel
+from tkinter import RIGHT, Y, Menu, Scrollbar, Text, Tk, Toplevel, messagebox
 assemblyFilePath = "assembly.txt"
 outputPath = "binary.txt"
 
@@ -43,14 +43,17 @@ regAddressMap = {
     "R7": "111",
 }
 
-def writeHexToFile(file,binary):
+
+def writeHexToFile(file, binary):
     file.write(f'{int(binary, 2):X}'+"\n")
 
-def writeBinaryToFile(file,binary):
+
+def writeBinaryToFile(file, binary):
     file.write(binary+"\n")
 
-def assemblyToBinary(f_out,line):
-    instructionSplit = re.split(" |, ", line)
+
+def assemblyToBinary(f_out, line):
+    instructionSplit = re.split(" |, |,", line)
     instructionArray = []
     for i in range(len(instructionSplit)):
         if (instructionSplit[i] != ""):
@@ -89,7 +92,7 @@ def assemblyToBinary(f_out,line):
             if instructionArray[2][0] == 'r':
                 rd = regAddressMap[instructionArray[2].upper()]
                 writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
-    return opcode, rs, rd, shmnt,imm
+    return opcode, rs, rd, shmnt, imm
 
 
 def openAssemblyFile():
@@ -111,6 +114,7 @@ def saveAssemblyFile():
     f_out.write(asmdata)
     f_out.close()
 
+
 def run(event=None):
     saveAssemblyFile()
     f = open(assemblyFilePath, "r")
@@ -119,18 +123,23 @@ def run(event=None):
         if line[0] == "#" or line[0] == "" or line[0] == "\n":
             continue
         line = re.sub('\n', '', line)
-        print(assemblyToBinary(f_out,line.lower()))
+        try:
+            print(assemblyToBinary(f_out, line.lower()))
+        except KeyError as e:
+            messagebox.showerror("Error", f"Error in {e}")
     f.close()
     f_out.close()
-   
+
+
 # -------------Main---------------
 Tk().withdraw()
 frame = Toplevel()
 
 scrollbar = Scrollbar(frame)
-scrollbar.pack(side = RIGHT, fill = Y)
+scrollbar.pack(side=RIGHT, fill=Y)
 frame.title("Assembler")
-textArea = Text(frame, height = 30, width = 100, padx = 3, pady = 3, yscrollcommand = scrollbar.set, undo=True, autoseparators=True, maxundo=-1)
+textArea = Text(frame, height=30, width=100, padx=3, pady=3,
+                yscrollcommand=scrollbar.set, undo=True, autoseparators=True, maxundo=-1)
 textArea.pack(side=RIGHT)
 scrollbar.config(command=textArea.yview)
 frame.bind('<Control-s>', run)

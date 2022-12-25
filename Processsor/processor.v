@@ -23,11 +23,13 @@
 
 module Processor (
     input clk,
-    input RESET
+    input reg [15:0] In_Port,
+    input reset,
+    output reg [15:0] Out_Port
 );
     reg [2:0] CCR; // flag register
-    reg [15:0] In_Port;
-    reg [15:0] Out_Port;
+    // reg [15:0] In_Port;
+    // reg [15:0] Out_Port;
 
     // fetch stage
     reg [31:0] jumpAddress;
@@ -60,7 +62,7 @@ module Processor (
 
     //FetchStage Fetch(reg_fetch_decode_enable,32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
     FetchStage Fetch(reg_fetch_decode_enable,32'b0,{16'b0,dst},isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk,
-    1'b0,
+    reset,
     1'b0,
     1'b0,
     branchResult,
@@ -95,7 +97,7 @@ module Processor (
     assign cu_mux_selector = HDU_mux_selector | branchResult | unconditionalJump;
     cu_mux cu_mux(opcode_decode,cu_mux_selector,cu_opcode);
     control_unit CU(cu_opcode,control_signals);
-    RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,RESET,WB_address); 
+    RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,reset,WB_address); 
     
     // register between decode and execute
     wire [15:0]Imm_value_execute;
@@ -137,10 +139,18 @@ module Processor (
     control_signals_execute[17],
     control_signals_execute[16],
     control_signals_execute[23],
-    control_signals_execute[24],
     control_signals_execute[13],
-    ALU_Result,ccr_out,In_Port,Out_Port);
+    ALU_Result,ccr_out,In_Port);
 
+    // write to OUT port
+    wire [15:0] dst_to_out_port;
+    assign  dst_to_out_port = dst;
+    always @(dst_to_out_port)begin 
+        if(control_signals_execute[24] == 1)begin
+
+        Out_Port = dst_to_out_port;
+        end
+    end
     always @(ccr_out) begin if(
     control_signals_execute[21] == 1 ||
     control_signals_execute[27] == 1 ||
@@ -151,8 +161,6 @@ module Processor (
     control_signals_execute[18] == 1 ||
     control_signals_execute[17] == 1 ||
     control_signals_execute[16] == 1 ||
-    control_signals_execute[23] == 1 ||
-    control_signals_execute[24] == 1 ||
     control_signals_execute[13] == 1 )begin CCR = ccr_out; end end
 
     // register between execute and memory

@@ -1,76 +1,73 @@
 vlog processor.v
-vsim work.Processor
+vlog proc_tb.v
+vsim work.ProcessorTb
 
 add wave -position insertpoint  \
-sim:/Processor/clk
+sim:/ProcessorTb/cpu/clk
 add wave -position insertpoint  \
-sim:/Processor/RESET
-
-# show internal registers
-add wave -position insertpoint  \
-sim:/Processor/registers/regFile
-
-# show flag register
-add wave -position insertpoint  \
-sim:/Processor/CCR
+sim:/ProcessorTb/cpu/reset
 
 # show data memory 
 add wave -position insertpoint  \
-sim:/Processor/memory_stage/mem/dataMem
+sim:/ProcessorTb/cpu/memory_stage/mem/dataMem
+
+# show internal registers
+add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/registers/regFile
+
+# PC and SP
+add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/Fetch/PC
+add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/memory_stage/sp
+
+# show flag register
+add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/CCR
+
+# show out port
+add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/Out_Port
+
+# show inport
+add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/In_Port
+
+
+
+###---------------PIPELINING--------------###
 
 
 # cycle 1 
 add wave -position insertpoint  \
-sim:/Processor/Fetch/PC
-add wave -position insertpoint  \
-sim:/Processor/Fetch/dataFromMemoryWire
+sim:/ProcessorTb/cpu/Fetch/dataFromMemoryWire
 
 # cycle 2 
 add wave -position insertpoint  \
-sim:/Processor/control_signals
+sim:/ProcessorTb/cpu/control_signals
 
 # cycle 3 
 add wave -position insertpoint  \
-sim:/Processor/ALU_Result
+sim:/ProcessorTb/cpu/ALU_Result
 
 # cycle 4
 add wave -position insertpoint  \
-sim:/Processor/ALU_result_mem
+sim:/ProcessorTb/cpu/ALU_result_mem
 
 
 # cycle 5
 add wave -position insertpoint  \
-sim:/Processor/registers/write_data
+sim:/ProcessorTb/cpu/registers/write_data
 add wave -position insertpoint  \
-sim:/Processor/WriteBack/dataFromMemory
+sim:/ProcessorTb/cpu/WriteBack/dataFromMemory
 
 # signals
 add wave -position insertpoint  \
-sim:/Processor/registers/write_enable
+sim:/ProcessorTb/cpu/registers/write_enable
 add wave -position insertpoint  \
-sim:/Processor/memory_stage/mem/write \
-sim:/Processor/memory_stage/mem/read
+sim:/ProcessorTb/cpu/memory_stage/mem/write \
+sim:/ProcessorTb/cpu/memory_stage/mem/read
 add wave -position insertpoint  \
-sim:/Processor/Fetch/enable
-add wave -position insertpoint  \
-sim:/Processor/branchResult
-add wave -position insertpoint  \
-sim:/Processor/unconditionalJump
+sim:/ProcessorTb/cpu/branchResult
 
-force -freeze sim:/Processor/clk 1 0, 0 {25 ps} -r 50
-force -freeze sim:/Processor/RESET 1 0
-run
-force -freeze sim:/Processor/RESET 0 1
-run
-run
-run
-run
-run
-run
-run
-run
-run
-run
-run
-run
 run

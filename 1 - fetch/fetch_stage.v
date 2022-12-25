@@ -81,11 +81,11 @@ wire [15:0] dataFromMemoryWire;
 reg ldm;
 reg [31:0]rstOrMux3reg;
 // ----------------for testing--------------------
-initial begin
-    // PC = 32'b00100000;
-    ldm = 0;
-    rstOrMux3reg = 32'b00011111;
-end
+// initial begin
+//     // PC = 32'b00100000;
+//     ldm = 0;
+//     rstOrMux3reg = 32'b00011111;
+// end
 // -----------------------------------------------
 
 // Instruction memory
@@ -123,11 +123,12 @@ always @(*)begin
     opCode = mux_out[15:11];
 end
 
-always @(posedge clk, negedge enable) begin
+always @(*)begin CS = ~reset; end 
+always @(posedge clk, negedge enable,posedge reset) begin
     if(enable == 1) begin 
         rstOrMux3reg = rstOrMux3;
         PC = rstOrMux3reg;
     end
-    CS = 1;
+    // CS = 1; 
 end
 endmodule
