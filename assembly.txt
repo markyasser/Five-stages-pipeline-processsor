@@ -1,8 +1,0 @@
-LDM R7, 41
-call R7
-nop
-nop
-nop
-nop
-ADD R7, R1
-POP R1

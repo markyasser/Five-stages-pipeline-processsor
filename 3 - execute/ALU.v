@@ -39,8 +39,8 @@ module ALU(Src,Dst,SHMNT,ALU_MOV,ALU_ADD,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND
     (ALU_SUB == 1'b1) ? Dst - Src:
     (ALU_AND == 1'b1) ? Src & Dst:
     (ALU_OR == 1'b1) ?  Src | Dst:
-    (ALU_SHL == 1'b1) ?  Src <<< SHMNT:
-    (ALU_SHR == 1'b1) ?  Src >>> SHMNT:
+    (ALU_SHL == 1'b1) ?  Dst <<< SHMNT:
+    (ALU_SHR == 1'b1) ?  Dst >>> SHMNT:
     (ALU_MOV == 1'b1) ?  Src:
     (ALU_IN == 1'b1) ? IN_port:
     (ALU_LDM == 1'b1) ? Src: 16'hx;

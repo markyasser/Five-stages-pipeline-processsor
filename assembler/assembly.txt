@@ -1,3 +1,11 @@
-ldm r1, 123
-mov r1, r2
-shr r2, 2
+ldm r1,44
+ldm r2,1
+sub r6,r7
+call r1
+nop
+nop
+nop
+nop
+add r1,r2
+pop r3
+pop r4

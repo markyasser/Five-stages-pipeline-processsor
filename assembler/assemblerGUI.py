@@ -75,9 +75,9 @@ def assemblyToBinary(f_out, line):
         opcode = opcodeMap[instructionArray[0].upper()]
         if instructionArray[0].upper() == "CALL":
             opcode = opcodeMap["PUSH"]
-            shmnt = regAddressMap["PCL"]
-            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
             shmnt = regAddressMap["PCH"]
+            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+            shmnt = regAddressMap["PCL"]
             writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
             opcode = opcodeMap["JMP"]
             rd = regAddressMap[instructionArray[1].upper()]

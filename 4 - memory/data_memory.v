@@ -17,7 +17,7 @@ input push;
 // Followed by the stack area (starting from [2^11−1 and up])
 reg [15:0] dataMem [0:(2 ** 11 - 1)];
 
-always @(write,push) begin // asssuming write is a HW signal
+always @(negedge clk,write,push) begin // asssuming write is a HW signal
     // Write
 	if(CS && write && !read)
 	begin

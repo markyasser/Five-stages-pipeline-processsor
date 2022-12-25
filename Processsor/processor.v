@@ -195,7 +195,7 @@ module Processor (
     MemoryStage memory_stage(shmnt_mem,ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memWrite_mem,memRead_mem,regWrite_mem,
     push_mem, //push
     pop_mem,  //pop
-    pc_mem,    //pc
+    pc_decode[15:0],    //pc
     2'b0,  //counter value
     1'b0,  //int signal comming from counter
     CCR, //flag register
