@@ -24,7 +24,7 @@
 module Processor (
     input clk,
     input reg [15:0] In_Port,
-    input RESET,
+    input reset,
     output reg [15:0] Out_Port
 );
     reg [2:0] CCR; // flag register
@@ -62,7 +62,7 @@ module Processor (
 
     //FetchStage Fetch(reg_fetch_decode_enable,32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
     FetchStage Fetch(reg_fetch_decode_enable,32'b0,{16'b0,dst},isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk,
-    1'b0,
+    reset,
     1'b0,
     1'b0,
     branchResult,
@@ -97,7 +97,7 @@ module Processor (
     assign cu_mux_selector = HDU_mux_selector | branchResult | unconditionalJump;
     cu_mux cu_mux(opcode_decode,cu_mux_selector,cu_opcode);
     control_unit CU(cu_opcode,control_signals);
-    RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,RESET,WB_address); 
+    RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,reset,WB_address); 
     
     // register between decode and execute
     wire [15:0]Imm_value_execute;
