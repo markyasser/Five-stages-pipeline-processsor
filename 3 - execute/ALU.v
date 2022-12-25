@@ -1,7 +1,8 @@
 // ALU module
-module ALU(Src,Dst,ALU_ADD,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND,ALU_OR,ALU_SHL,ALU_SHR,ALU_IN,ALU_LDM,ALU_Result,CCR,IN_port);
-    input [15:0] Src,Dst,IN_port;  // ALU 16-bit Inputs                 
-    input ALU_ADD,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND,ALU_OR,ALU_IN,ALU_SHL,ALU_SHR,ALU_LDM; // ALU Selection
+module ALU(Src,Dst,SHMNT,ALU_MOV,ALU_ADD,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND,ALU_OR,ALU_SHL,ALU_SHR,ALU_IN,ALU_LDM,ALU_Result,CCR,IN_port);
+    input [15:0] Src,Dst,IN_port;  // ALU 16-bit Inputs
+    input [4:0] SHMNT;
+    input ALU_ADD,ALU_MOV,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND,ALU_OR,ALU_IN,ALU_SHL,ALU_SHR,ALU_LDM; // ALU Selection
     // input clk;
     output reg [15:0] ALU_Result; // ALU 16-bit Output
     output reg[2:0] CCR; // flags register
@@ -38,8 +39,9 @@ module ALU(Src,Dst,ALU_ADD,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND,ALU_OR,ALU_SH
     (ALU_SUB == 1'b1) ? Dst - Src:
     (ALU_AND == 1'b1) ? Src & Dst:
     (ALU_OR == 1'b1) ?  Src | Dst:
-    (ALU_SHL == 1'b1) ?  Dst <<< Src:
-    (ALU_SHR == 1'b1) ?  Dst >>> Src:
+    (ALU_SHL == 1'b1) ?  Src <<< SHMNT:
+    (ALU_SHR == 1'b1) ?  Src >>> SHMNT:
+    (ALU_MOV == 1'b1) ?  Src:
     (ALU_IN == 1'b1) ? IN_port:
     (ALU_LDM == 1'b1) ? Src: 16'hx;
 
