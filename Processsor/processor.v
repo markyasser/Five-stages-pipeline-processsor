@@ -131,7 +131,8 @@ module Processor (
     wire [15:0] src;
     mux32 muxForwarding_Src(src_from_mux,ALU_result_mem,WB_data,selectorFU_src,src); 
     mux32 muxForwarding_Dst(Rd_data_execute,ALU_result_mem,WB_data,selectorFU_dst,dst); 
-    ALU alu(src,dst,
+    ALU alu(src,dst,shmnt_execute,
+    control_signals_execute[22],
     control_signals_execute[21],
     control_signals_execute[27],
     control_signals_execute[26],

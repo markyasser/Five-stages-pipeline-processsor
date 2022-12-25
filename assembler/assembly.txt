@@ -1,0 +1,3 @@
+ldm r1, 123
+mov r1, r2
+shr r2, 2
