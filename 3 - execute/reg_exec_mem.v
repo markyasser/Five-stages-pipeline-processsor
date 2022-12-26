@@ -10,6 +10,10 @@ module reg_exec_mem(
     input  push,
     input  pop,
     input  [1:0]shmnt,
+    input pushPc,
+    input popPc,
+    input pushCCR,
+    input popCCR,
 
     output reg [15:0] ALU_result_mem,
     output reg [15:0] Rs_data_mem,
@@ -20,9 +24,13 @@ module reg_exec_mem(
     output reg  regWrite_mem,
     output reg  push_mem,
     output reg  pop_mem,
-    output reg  [1:0]shmnt_mem
+    output reg  [1:0]shmnt_mem,
+    output reg pushPc_mem,
+    output reg popPc_mem,
+    output reg pushCCR_mem,
+    output reg popCCR_mem
 );
-    reg [57:0] register;
+    reg [61:0] register;
     initial begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
         register = 0;
     end
@@ -38,6 +46,10 @@ module reg_exec_mem(
         register[54] <=  push;
         register[55] <=  pop;
         register[57:56] <=  shmnt;
+        register[58] <= pushPc;
+        register[59] <= popPc;
+        register[60] <= pushCCR;
+        register[61] <= popCCR;
     end
 
     always @ (posedge clk) // read at the +ve edge
@@ -52,6 +64,10 @@ module reg_exec_mem(
         push_mem = register[54];
         pop_mem = register[55];
         shmnt_mem = register[57:56];
+        pushPc_mem = register[58];
+        popPc_mem = register[59];
+        pushCCR_mem = register[60];
+        popCCR_mem = register[61];
     end
 
 endmodule

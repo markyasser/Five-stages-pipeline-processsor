@@ -91,6 +91,7 @@ reg [31:0]rstOrMux3reg;
 // -----------------------------------------------
 
 // Instruction memory
+
 InstructionMemory mem(PC, writeData, dataFromMemoryWire, 1'b1, 1'b0, CS, clk);
 wire [15:0] mux_out;
 assign mux_out = (ldm | branchSignal | unconditionalJump)? 16'b0 : dataFromMemoryWire;
