@@ -5,7 +5,7 @@ module reg_decode_exec(
     input [15:0]Rs_data,
     input [15:0]Rd_data,
     input [2:0] Rd,
-    input [33:0] control_signals,
+    input [34:0] control_signals,
     input [2:0] Rs,
     
 
@@ -15,10 +15,10 @@ module reg_decode_exec(
     output reg [15:0]Rs_data_execute,
     output reg [15:0]Rd_data_execute,
     output reg [2:0] Rd_execute,
-    output reg [33:0] control_signals_execute,
+    output reg [34:0] control_signals_execute,
     output reg [2:0] Rs_execute
 );
-    reg [92:0] register;
+    reg [93:0] register;
     initial begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
         register = 0;
     end
@@ -29,24 +29,24 @@ module reg_decode_exec(
 
     always @ (negedge clk,Rs_data,Rd_data,Imm_value) // read at the +ve edge
     begin
-        register[33:0] <= control_signals;
-        register[36:34] <= Rd;
-        register[52:37] <= Rd_data;
-        register[68:53] <= Rs_data;
-        register[73:69] <= shmnt;
-        register[89:74] <= Imm_value;
-        register[92:90] <= Rs;
+        register[34:0] <= control_signals;
+        register[37:35] <= Rd;
+        register[53:38] <= Rd_data;
+        register[69:54] <= Rs_data;
+        register[74:70] <= shmnt;
+        register[90:75] <= Imm_value;
+        register[93:91] <= Rs;
     end
 
     always @ (posedge clk) // write at the -ve edge
     begin
-        control_signals_execute = register[33:0] ;
-        Rd_execute              = register[36:34];
-        Rd_data_execute         = register[52:37];
-        Rs_data_execute         = register[68:53];
-        shmnt_execute           = register[73:69];
-        Imm_value_execute       = register[89:74];
-        Rs_execute              = register[92:90];
+        control_signals_execute = register[34:0] ;
+        Rd_execute              = register[37:35];
+        Rd_data_execute         = register[53:38];
+        Rs_data_execute         = register[69:54];
+        shmnt_execute           = register[74:70];
+        Imm_value_execute       = register[90:75];
+        Rs_execute              = register[93:91];
     end
 
 endmodule

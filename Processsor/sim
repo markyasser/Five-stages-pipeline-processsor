@@ -19,6 +19,8 @@ sim:/ProcessorTb/cpu/registers/regFile
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/Fetch/PC
 add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/Fetch/enable
+add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/memory_stage/sp
 
 # show flag register
@@ -40,9 +42,9 @@ sim:/ProcessorTb/cpu/In_Port
 
 # cycle 1 
 add wave -position insertpoint  \
-sim:/ProcessorTb/cpu/Fetch/dataFromMemoryWire
+sim:/ProcessorTb/cpu/Fetch/mux_out
 
-# cycle 2 
+# cycle 2
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/control_signals
 
@@ -71,8 +73,6 @@ sim:/ProcessorTb/cpu/memory_stage/mem/write \
 sim:/ProcessorTb/cpu/memory_stage/mem/read
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/branchResult
-add wave -position insertpoint  \
-sim:/ProcessorTb/cpu/memory_stage/shmnt_mem
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/memory_stage/writeData 
 run

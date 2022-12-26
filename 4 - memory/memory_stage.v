@@ -106,8 +106,8 @@ assign writeData_beforefinal =
     (intSignalFromCounter == 1'b1) ? writeDataInCaseOfInt : 16'bz;
 
 assign writeData =  (!pushPc & !pushCCR)? writeData_beforefinal:
-                    (pushPc & !pushCCR)? pc:
-                    (!pushPc & pushCCR)? {13'b0,flagReg} : 16'bz;
+                    (pushPc  & !pushCCR)? pc:
+                    (!pushPc &  pushCCR)? {13'b0,flagReg} : 16'bz;
 // assign writeData =  (shmnt_mem == 2'b00)? writeData_beforefinal:
 //                     (shmnt_mem == 2'b01)? pc:
 //                     (shmnt_mem == 2'b10)? {13'b0,flagReg} : 16'bz;

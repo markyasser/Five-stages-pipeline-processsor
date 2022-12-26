@@ -1,7 +1,10 @@
-ldm r1,42
-ldm r2,1
-sub r6,r7
+ldm r1,1232
+std r1,r3
+ldd r3,r1
 call r1
 inc r5
 dec r5
+shl r4,10
+shr r4,10
 add r1,r2
+ret

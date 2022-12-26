@@ -32,6 +32,12 @@ module FetchStage (
     clk,
     reset,
     interupt,
+    pushflags,
+    pushpc,
+    popPc,
+    popFlags,
+    pop_flags_exec,
+    rdst_call,
     return,
     branchSignal,
     unconditionalJump,
@@ -47,6 +53,12 @@ input unconditionalJump;
 input clk;
 input enable;
 input reset;
+input pushflags;
+input pushpc;
+input popPc;
+input popFlags;
+input pop_flags_exec;
+input [2:0]rdst_call;
 input interupt;
 input return;
 input branchSignal;
@@ -94,7 +106,13 @@ reg [31:0]rstOrMux3reg;
 
 InstructionMemory mem(PC, writeData, dataFromMemoryWire, 1'b1, 1'b0, CS, clk);
 wire [15:0] mux_out;
-assign mux_out = (ldm | branchSignal | unconditionalJump)? 16'b0 : dataFromMemoryWire;
+assign mux_out = (ldm | branchSignal | unconditionalJump | pop_flags_exec)? 16'b0:
+                (pushflags == 1)? {8'b11111_000,rdst_call,5'b00000}:
+                (pushpc == 1)? {8'b11011_000,rdst_call,5'b00000}:
+                
+                (popPc == 1)? {8'b11101_000,rdst_call,5'b00000}: 
+                // (popFlags == 1)? {8'b00000_000,rdst_call,5'b00000}:
+                dataFromMemoryWire;
 
 assign Inst_as_Imm_value = dataFromMemoryWire;
 
@@ -127,7 +145,7 @@ always @(*)begin
 end
 
 always @(*)begin CS = ~reset; end 
-always @(posedge clk, negedge enable,posedge reset,return) begin
+always @(posedge clk, negedge enable,posedge reset,return,enable) begin
     if(enable == 1) begin 
         rstOrMux3reg = rstOrMux3;
         PC = rstOrMux3reg;

@@ -41,16 +41,17 @@ module Processor (
     wire [2:0] Rd;
     wire [2:0] Rs;
     wire [4:0] opCode;
-    wire [33:0] control_signals; // will be initialized in decode stage
+    wire [34:0] control_signals; // will be initialized in decode stage
     wire [15:0] Inst_as_Imm_value;
     wire reg_fetch_decode_enable;
     
     // if jump is true of false
     wire [15:0] dst;
-    wire [33:0] control_signals_execute;
+    wire [34:0] control_signals_execute;
     wire OrCCR;
     reg branchResult;
     reg unconditionalJump;
+    reg Return;
     
     assign OrCCR = CCR[0] | CCR[1] | CCR[2];
     wire [1:0]shmnt_WB;
@@ -63,22 +64,35 @@ module Processor (
         unconditionalJump = 0; 
         shmnt_WB_reg = 0;
         pop_WB_reg = 0;
+        Return = 0;
     end
     always@(*)begin 
         branchResult = OrCCR & control_signals_execute[0];
         unconditionalJump = control_signals_execute[7];
+        Return = control_signals_execute[33];
         shmnt_WB_reg = shmnt_WB;
         pop_WB_reg = pop_WB;
     end
     wire [31:0] PC_wire;
     wire reg_FD_enable_callStateMachine;
+    // wire enable_if_call;
+    
     wire popPc_WB,popCCR_WB;
+    wire [2:0]  Rd_decode;  
 
+    wire pc_enable_call;
+    assign pc_enable_call = !(control_signals[30] | control_signals[31] | control_signals[32] | control_signals[33] | control_signals[34]);
     //FetchStage Fetch(reg_fetch_decode_enable,32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
-    FetchStage Fetch(reg_FD_enable_callStateMachine & reg_fetch_decode_enable,32'b0,{16'b0,dst},isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk,
+    FetchStage Fetch(pc_enable_call & reg_fetch_decode_enable,32'b0,{16'b0,dst},isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk,
     reset,
     1'b0,
-    popPc_WB & pop_WB_reg, // selector of the pop pc
+    control_signals[31],
+    control_signals[30],
+    control_signals[32],
+    control_signals[33],
+    Return,
+    Rd_decode,
+    popPc_WB & pop_WB_reg, // selector of the pop pc (return)
     branchResult,
     unconditionalJump,
     {16'b0,WB_data},
@@ -89,11 +103,17 @@ module Processor (
     wire [31:0] Next_inst_addr_decode;
     wire [4:0]  opcode_decode;
     wire [2:0]  Rs_decode;
-    wire [2:0]  Rd_decode;
+    
     wire [4:0]  shmnt_decode;
     wire [31:0]  pc_decode;
+
+    // wire[34:0] controlSignals_Call;
+
     
-    reg_fetch_decode reg_fetch_decode(clk,reg_FD_enable_callStateMachine & reg_fetch_decode_enable,nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,
+    // CallStateMachine callStateMachine(clk,reset,opCode,controlSignals_Call,reg_FD_enable_callStateMachine);
+
+    wire[35:0] control_signals_if_call_decode;
+    reg_fetch_decode reg_fetch_decode(clk,reg_fetch_decode_enable,nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,
     Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode,pc_decode);
 
     // decode stage
@@ -111,17 +131,16 @@ module Processor (
     HDU hdu(Rs_decode,Rd_decode,Rd_execute,control_signals_execute[14],control_signals_execute[2],reg_fetch_decode_enable,HDU_mux_selector);
     wire [4:0]cu_opcode;
     wire cu_mux_selector;
-    assign cu_mux_selector = HDU_mux_selector | branchResult | unconditionalJump;
+    assign cu_mux_selector = HDU_mux_selector | branchResult | unconditionalJump | Return;
     cu_mux cu_mux(opcode_decode,cu_mux_selector,cu_opcode);
     control_unit CU(cu_opcode,control_signals);
 
-    wire[33:0] controlSignals_Call;
-    wire[33:0] controlSignals_muxOut;
-
+    // wire[34:0] controlSignals_Call;
+    // CallStateMachine callStateMachine(clk,reset,opcode_decode,controlSignals_Call,reg_FD_enable_callStateMachine);
+    // assign enable_if_call = (opcode_decode == 5'b01101) ? 1'b0: 1'b1;
     
-    CallStateMachine callStateMachine(clk,reset,opcode_decode,controlSignals_Call,reg_FD_enable_callStateMachine);
-    
-    assign controlSignals_muxOut = (opcode_decode==5'b01101)? controlSignals_Call : control_signals;
+    // wire[34:0] controlSignals_muxOut;
+    // assign controlSignals_muxOut = (opcode_decode==5'b01101)? controlSignals_Call : control_signals;
     
     RegFile registers(WB_signal_if_not_ret,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,reset,WB_address); 
     
@@ -211,11 +230,12 @@ module Processor (
         control_signals_execute[14],
         shmnt_execute[1:0],
         control_signals_execute[30],
-        control_signals_execute[31],
         control_signals_execute[32],
+        control_signals_execute[31],
         control_signals_execute[33],
         // output
-    ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, push_mem,
+    ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, 
+    push_mem,
     pop_mem,
     shmnt_mem,
     pushPc_mem,
