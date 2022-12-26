@@ -52,23 +52,33 @@ module Processor (
     reg unconditionalJump;
     
     assign OrCCR = CCR[0] | CCR[1] | CCR[2];
+    wire [1:0]shmnt_WB;
+    wire pop_WB;
+    reg [1:0]shmnt_WB_reg;
+    reg pop_WB_reg;
+    wire [15:0] WB_data;    // will be initiallized from write back (down)
     initial begin
         branchResult = 0; 
         unconditionalJump = 0; 
+        shmnt_WB_reg = 0;
+        pop_WB_reg = 0;
     end
     always@(*)begin 
         branchResult = OrCCR & control_signals_execute[0];
         unconditionalJump = control_signals_execute[7];
+        shmnt_WB_reg = shmnt_WB;
+        pop_WB_reg = pop_WB;
     end
     wire [31:0] PC_wire;
+    
     //FetchStage Fetch(reg_fetch_decode_enable,32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
     FetchStage Fetch(reg_fetch_decode_enable,32'b0,{16'b0,dst},isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk,
     reset,
     1'b0,
-    1'b0,
+    shmnt_WB_reg[0] & pop_WB_reg, // selector of the pop pc
     branchResult,
     unconditionalJump,
-    32'b0,
+    {16'b0,WB_data},
     PC_wire
     );
     always @(*) begin PC = PC_wire; end
@@ -84,9 +94,10 @@ module Processor (
     Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode,pc_decode);
 
     // decode stage
-    wire [15:0] WB_data;    // will be initiallized from write back (down)
+    
     wire [2:0] WB_address;  // will be initiallized from write back (down)
     wire regWrite_WB;       // will be initiallized from write back (down)
+    wire WB_signal_if_not_ret;
     wire [2:0] Rd_execute;
     reg rst;
     // reg rstAll;
@@ -100,7 +111,7 @@ module Processor (
     assign cu_mux_selector = HDU_mux_selector | branchResult | unconditionalJump;
     cu_mux cu_mux(opcode_decode,cu_mux_selector,cu_opcode);
     control_unit CU(cu_opcode,control_signals);
-    RegFile registers(regWrite_WB,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,reset,WB_address); 
+    RegFile registers(WB_signal_if_not_ret,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,rst,reset,WB_address); 
     
     // register between decode and execute
     wire [15:0]Imm_value_execute;
@@ -205,9 +216,12 @@ module Processor (
     wire [15:0] dataFromMemory_WB;
     wire [15:0] ALU_result_WB;
     wire MEMWB_memRead_WB;
-    reg_mem_WB reg_mem_WB(clk,dataFromMemory,ALU_result_mem,Rd_mem,memRead_mem,regWrite_mem,
-    dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB);
-
+    
+    
+    reg_mem_WB reg_mem_WB(clk,dataFromMemory,ALU_result_mem,Rd_mem,memRead_mem,regWrite_mem,shmnt_mem,pop_mem,
+    dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB,shmnt_WB,pop_WB);
+    
+    assign WB_signal_if_not_ret = ((shmnt_WB[0] | shmnt_WB[1])  & pop_WB)?0:regWrite_WB;
     // write back stage
     write_back WriteBack(dataFromMemory_WB,ALU_result_WB,MEMWB_memRead_WB,WB_data);
 endmodule

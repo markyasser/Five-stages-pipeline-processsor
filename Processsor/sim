@@ -61,7 +61,9 @@ sim:/ProcessorTb/cpu/registers/write_data
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/WriteBack/dataFromMemory
 
-# signals
+# signals 
+add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/Fetch/return
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/registers/write_enable
 add wave -position insertpoint  \

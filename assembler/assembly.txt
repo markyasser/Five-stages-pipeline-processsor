@@ -1,11 +1,8 @@
-ldm r1,44
+ldm r1,42
 ldm r2,1
 sub r6,r7
 call r1
-nop
-nop
-nop
-nop
+inc r5
+inc r3
 add r1,r2
-pop r3
-pop r4
+ret

@@ -69,8 +69,18 @@ def assemblyToBinary(f_out, line):
     shmnt = "00000"
     imm = ""
     if (len(instructionArray) == 1):
-        opcode = opcodeMap[instructionArray[0].upper()]
-        writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+        if instructionArray[0].upper() == "RET":
+            opcode = opcodeMap["POP"]
+            shmnt = regAddressMap["PCL"]
+            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+            shmnt = regAddressMap["PCH"]
+            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+            writeBinaryToFile(f_out, "0000000000000000")  # NOP
+            writeBinaryToFile(f_out, "0000000000000000")  # NOP
+        else:
+            opcode = opcodeMap[instructionArray[0].upper()]
+            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+
     if (len(instructionArray) == 2):
         opcode = opcodeMap[instructionArray[0].upper()]
         if instructionArray[0].upper() == "CALL":
@@ -83,12 +93,12 @@ def assemblyToBinary(f_out, line):
             rd = regAddressMap[instructionArray[1].upper()]
             shmnt = "00000"
             writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
-        elif instructionArray[0].upper() == "RET":
-            opcode = opcodeMap["POP"]
-            shmnt = regAddressMap["PCH"]
-            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
-            shmnt = regAddressMap["PCL"]
-            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+        # elif instructionArray[0].upper() == "RET":
+        #     opcode = opcodeMap["POP"]
+        #     shmnt = regAddressMap["PCL"]
+        #     writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+        #     shmnt = regAddressMap["PCH"]
+        #     writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
 
         elif instructionArray[1][0] == 'r':
             rd = regAddressMap[instructionArray[1].upper()]
