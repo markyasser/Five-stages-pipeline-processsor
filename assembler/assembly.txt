@@ -3,6 +3,6 @@ ldm r2,1
 sub r6,r7
 call r1
 inc r5
-inc r3
+dec r5
 add r1,r2
 ret
