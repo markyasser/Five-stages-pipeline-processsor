@@ -120,9 +120,8 @@ module Processor (
     wire [2:0]Rs_execute;
     wire [15:0]Rd_data_execute;
     
-    wire [31:0] PC_exec;
-    reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,pc_decode,
-    Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute,PC_exec);
+    reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,
+    Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute);
 
     // execute stage
     wire [15:0] ALU_Result; // ALU 16-bit Output
@@ -184,7 +183,6 @@ module Processor (
     // register between execute and memory
     wire [15:0] Rs_data_mem;
     wire [15:0] Rd_data_mem;
-    wire [15:0] pc_mem;
     wire  memRead_mem;
     wire  memWrite_mem;
     wire  push_mem;
@@ -196,9 +194,8 @@ module Processor (
         control_signals_execute[15],
         control_signals_execute[14],
         shmnt_execute[1:0],
-        PC_exec[15:0], // pc
         // output
-    ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, push_mem, pop_mem,shmnt_mem,pc_mem);
+    ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, push_mem, pop_mem,shmnt_mem);
 
     // memory stage
     wire [15:0] dataFromMemory;
@@ -209,7 +206,7 @@ module Processor (
     MemoryStage memory_stage(shmnt_mem,ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memWrite_mem,memRead_mem,regWrite_mem,
     push_mem, //push
     pop_mem,  //pop
-    pc_decode[15:0],    //pc
+    pc_decode[15:0],    // pc to be writen if push PC occured (CALL instruction)
     2'b0,  //counter value
     1'b0,  //int signal comming from counter
     CCR, //flag register

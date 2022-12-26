@@ -1,0 +1,13 @@
+-testing CALL and RET :
+ldm r1,42
+ldm r2,1
+sub r6,r7
+call r1
+inc r5
+dec r5
+add r1,r2
+ret
+
+output :
+26 cycle 
+//---------------------------------//
