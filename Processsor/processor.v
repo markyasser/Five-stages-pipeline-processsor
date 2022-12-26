@@ -166,7 +166,9 @@ module Processor (
         Out_Port = dst_to_out_port;
         end
     end
-    always @(ccr_out) begin if(
+    wire return_CCR;
+    assign return_CCR = shmnt_WB_reg[0] & pop_WB_reg;
+    always @(*) begin if(
     control_signals_execute[21] == 1 ||
     control_signals_execute[27] == 1 ||
     control_signals_execute[26] == 1 ||
@@ -176,7 +178,8 @@ module Processor (
     control_signals_execute[18] == 1 ||
     control_signals_execute[17] == 1 ||
     control_signals_execute[16] == 1 ||
-    control_signals_execute[13] == 1 )begin CCR = ccr_out; end end
+    control_signals_execute[13] == 1 ||
+    return_CCR == 1)begin CCR = (return_CCR == 1)? WB_data : ccr_out; end end
 
     // register between execute and memory
     wire [15:0] Rs_data_mem;
