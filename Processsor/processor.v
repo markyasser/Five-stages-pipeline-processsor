@@ -40,13 +40,13 @@ module Processor (
     wire [2:0] Rd;
     wire [2:0] Rs;
     wire [4:0] opCode;
-    wire [29:0] control_signals; // will be initialized in decode stage
+    wire [33:0] control_signals; // will be initialized in decode stage
     wire [15:0] Inst_as_Imm_value;
     wire reg_fetch_decode_enable;
     
     // if jump is true of false
     wire [15:0] dst;
-    wire [29:0] control_signals_execute;
+    wire [33:0] control_signals_execute;
     wire OrCCR;
     reg branchResult;
     reg unconditionalJump;
