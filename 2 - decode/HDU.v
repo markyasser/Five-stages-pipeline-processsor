@@ -9,7 +9,7 @@ module HDU(
 );
 always@(*)
 begin 
-    load_use_case_enable = ((Rdst_alu == Rs_decode || Rdst_alu == Rd_decode) && (!pop_alu && memRead_alu))? 0: 1;
+    load_use_case_enable = ((Rdst_alu == Rs_decode || Rdst_alu == Rd_decode) && (pop_alu && memRead_alu))? 0: 1;
 end
 assign mux_selector = ~load_use_case_enable;
 
