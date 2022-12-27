@@ -171,9 +171,7 @@ module Processor (
 
     wire [15:0] ALU_result_mem; // ALU RESULT FROM MEMORY STAGE
     wire [2:0] Rd_mem; // Rd from memory stage
-    // WB_address is Rd from WB stage
     wire  regWrite_mem; //regWrite_WB is WB signal from WB stage
-    // regWrite_mem is WB signal from memory stage
     wire [1:0]selectorFU_src;
     wire [1:0]selectorFU_dst;
     FU forwaringUnit(Rs_execute,Rd_execute,Rd_mem,WB_address,regWrite_mem,regWrite_WB,selectorFU_src,selectorFU_dst);
@@ -196,15 +194,15 @@ module Processor (
     control_signals_execute[13],
     ALU_Result,ccr_out,In_Port);
 
-    // write to OUT port
+    //---------write to OUT port------------//
     wire [15:0] dst_to_out_port;
     assign  dst_to_out_port = dst;
     always @(dst_to_out_port)begin 
         if(control_signals_execute[24] == 1)begin
-
-        Out_Port = dst_to_out_port;
+            Out_Port = dst_to_out_port;
         end
     end
+    //-------------------------------------//
     wire return_CCR;
     assign return_CCR = popCCR_WB & pop_WB_reg;
     always @(*) begin if(
@@ -243,14 +241,14 @@ module Processor (
         control_signals_execute[31],
         control_signals_execute[33],
         // outputs
-    ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, 
-    push_mem,
-    pop_mem,
-    shmnt_mem,
-    pushPc_mem,
-    popPc_mem,
-    pushCCR_mem,
-    popCCR_mem
+        ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, 
+        push_mem,
+        pop_mem,
+        shmnt_mem,
+        pushPc_mem,
+        popPc_mem,
+        pushCCR_mem,
+        popCCR_mem
     );
 
     //###########################################################################################################
@@ -272,12 +270,12 @@ module Processor (
     CCR, //flag register
     dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,clk); // TODO : write push and pop and sp
 
-    // register between memory and write back
     wire [15:0] dataFromMemory_WB;
     wire [15:0] ALU_result_WB;
     wire MEMWB_memRead_WB;
     
     
+    // register between memory and write back
     reg_mem_WB reg_mem_WB(clk,dataFromMemory,ALU_result_mem,Rd_mem,memRead_mem,regWrite_mem,shmnt_mem,pop_mem,popPc_mem,popCCR_mem,
     dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB,shmnt_WB,pop_WB,popPc_WB,popCCR_WB);
     
