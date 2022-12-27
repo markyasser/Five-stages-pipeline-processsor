@@ -149,7 +149,9 @@ def saveMemory(file):
         file.write(instruction+"\n")
 
 def run(event=None):
+    global instructionMemory
     saveAssemblyFile()
+    instructionMemory = ["0000000000000000"] * (2 ** 20)
     f = open(assemblyFilePath, "r")
     f_out = open(outputPath, "w")
     for line in f:
