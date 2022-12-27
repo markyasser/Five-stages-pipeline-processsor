@@ -45,8 +45,9 @@ regAddressMap = {
     "PCL": "00001",
     "PCH": "00010",
 }
-
-
+instructionMemory = ["0000000000000000"] * (2 ** 20)
+nextInstructionAddress = 2 ** 5
+# print(instructionMemory)
 def writeHexToFile(file, binary):
     file.write(f'{int(binary, 2):X}'+"\n")
 
@@ -55,7 +56,9 @@ def writeBinaryToFile(file, binary):
     file.write(binary+"\n")
 
 
-def assemblyToBinary(f_out, line):
+def assemblyToBinary(line):
+    global instructionMemory
+    global nextInstructionAddress
     opcode = "00000"
     rd = "000"
     rs = "000"
@@ -78,31 +81,46 @@ def assemblyToBinary(f_out, line):
         imm = ""
         if (len(instructionArray) == 1):
             opcode = opcodeMap[instructionArray[0].upper()]
-            writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+            # writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+            instructionMemory[nextInstructionAddress] = opcode+rs+rd+shmnt
+            nextInstructionAddress = nextInstructionAddress + 1
         if (len(instructionArray) == 2):
-            opcode = opcodeMap[instructionArray[0].upper()]
-            if instructionArray[1][0] == 'r':
-                rd = regAddressMap[instructionArray[1].upper()]
-                writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+            if instructionArray[0].upper() == ".ORG":
+                nextInstructionAddress = int(instructionArray[1])
+            else:
+                opcode = opcodeMap[instructionArray[0].upper()]
+                if instructionArray[1][0] == 'r':
+                    rd = regAddressMap[instructionArray[1].upper()]
+                    # writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+                    instructionMemory[nextInstructionAddress] = opcode+rs+rd+shmnt
+                    nextInstructionAddress = nextInstructionAddress + 1
         elif (len(instructionArray) == 3):
             if instructionArray[0].upper() == "LDM":
                 opcode = opcodeMap[instructionArray[0].upper()]
                 rd = regAddressMap[instructionArray[1].upper()]
                 imm = f'{int(instructionArray[2]):016b}'
-                writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
-                writeBinaryToFile(f_out, imm)
+                # writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
+                # writeBinaryToFile(f_out, imm)
+                instructionMemory[nextInstructionAddress] = opcode+"000"+rd+shmnt
+                nextInstructionAddress = nextInstructionAddress + 1
+                instructionMemory[nextInstructionAddress] = imm
+                nextInstructionAddress = nextInstructionAddress + 1
             elif instructionArray[0].upper() == "SHL" or instructionArray[0].upper() == "SHR":
                 opcode = opcodeMap[instructionArray[0].upper()]
                 rd = regAddressMap[instructionArray[1].upper()]
                 shmnt = f'{int(instructionArray[2]):05b}'
-                writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
+                # writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
+                instructionMemory[nextInstructionAddress] = opcode+"000"+rd+shmnt
+                nextInstructionAddress = nextInstructionAddress + 1
             else:
                 opcode = opcodeMap[instructionArray[0].upper()]
                 if instructionArray[1][0] == 'r':
                     rs = regAddressMap[instructionArray[1].upper()]
                 if instructionArray[2][0] == 'r':
                     rd = regAddressMap[instructionArray[2].upper()]
-                    writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+                    # writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+                    instructionMemory[nextInstructionAddress] = opcode+rs+rd+shmnt
+                    nextInstructionAddress = nextInstructionAddress + 1
     return opcode, rs, rd, shmnt, imm
 
 
@@ -125,6 +143,10 @@ def saveAssemblyFile():
     f_out.write(asmdata)
     f_out.close()
 
+def saveMemory(file):
+    global instructionMemory
+    for instruction in instructionMemory:
+        file.write(instruction+"\n")
 
 def run(event=None):
     saveAssemblyFile()
@@ -135,9 +157,10 @@ def run(event=None):
             continue
         line = re.sub('\n', '', line)
         try:
-            print(assemblyToBinary(f_out, line.lower()))
+            print(assemblyToBinary(line.lower()))
         except KeyError as e:
             messagebox.showerror("Error", f"Error in {e}")
+    saveMemory(f_out)
     f.close()
     f_out.close()
 
