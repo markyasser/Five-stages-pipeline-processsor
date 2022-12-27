@@ -86,7 +86,7 @@ def assemblyToBinary(line):
             nextInstructionAddress = nextInstructionAddress + 1
         if (len(instructionArray) == 2):
             if instructionArray[0].upper() == ".ORG":
-                nextInstructionAddress = int(instructionArray[1])
+                nextInstructionAddress = int(instructionArray[1], 16)
             else:
                 opcode = opcodeMap[instructionArray[0].upper()]
                 if instructionArray[1][0] == 'r':
@@ -98,7 +98,7 @@ def assemblyToBinary(line):
             if instructionArray[0].upper() == "LDM":
                 opcode = opcodeMap[instructionArray[0].upper()]
                 rd = regAddressMap[instructionArray[1].upper()]
-                imm = f'{int(instructionArray[2]):016b}'
+                imm = f'{int(instructionArray[2], 16):016b}'
                 # writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
                 # writeBinaryToFile(f_out, imm)
                 instructionMemory[nextInstructionAddress] = opcode+"000"+rd+shmnt
@@ -108,7 +108,7 @@ def assemblyToBinary(line):
             elif instructionArray[0].upper() == "SHL" or instructionArray[0].upper() == "SHR":
                 opcode = opcodeMap[instructionArray[0].upper()]
                 rd = regAddressMap[instructionArray[1].upper()]
-                shmnt = f'{int(instructionArray[2]):05b}'
+                shmnt = f'{int(instructionArray[2], 16):05b}'
                 # writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
                 instructionMemory[nextInstructionAddress] = opcode+"000"+rd+shmnt
                 nextInstructionAddress = nextInstructionAddress + 1
