@@ -31,10 +31,8 @@ module Processor (
 );
     reg [2:0] CCR; // flag register
     reg [31:0] PC; // PC
-    // reg [15:0] In_Port;
-    // reg [15:0] Out_Port;
 
-    // fetch stage
+    
     reg [31:0] jumpAddress;
     wire [31:0] nextInstructionAddress;
     wire isImmediate;
@@ -46,14 +44,12 @@ module Processor (
     wire [15:0] Inst_as_Imm_value;
     wire reg_fetch_decode_enable;
     
-    // if jump is true of false
     wire [15:0] dst;
     wire [34:0] control_signals_execute;
     wire OrCCR;
     reg branchResult;
     reg unconditionalJump;
     reg Return;
-    
     assign OrCCR = CCR[0] | CCR[1] | CCR[2];
     wire [1:0]shmnt_WB;
     wire pop_WB;
@@ -80,45 +76,55 @@ module Processor (
     
     wire popPc_WB,popCCR_WB;
     wire [2:0]  Rd_decode;  
-
     wire pc_enable_call;
     assign pc_enable_call = !(control_signals[30] | control_signals[31] | control_signals[32] | control_signals[33] | control_signals[34]);
+    
+    
+    //###########################################################################################################
+    //############################################### FETCH STAGE ###############################################
+    //###########################################################################################################
     //FetchStage Fetch(reg_fetch_decode_enable,32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
-    FetchStage Fetch(pc_enable_call & reg_fetch_decode_enable,32'b0,{16'b0,dst},isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk,
-    reset,
-    interupt,
-    control_signals[31],
-    control_signals[30],
-    control_signals[32],
-    control_signals[33],
-    Return,
-    Rd_decode,
+    FetchStage Fetch(
+    pc_enable_call & reg_fetch_decode_enable, // enable of the PC
+    32'b0,
+    {16'b0,dst},  // JMP address
+    isImmediate,  // the is a selector to make nop if the instruction inside the decode now is an Imm value
+    nextInstructionAddress, // address of the next instruction
+    SHMNT,Rd,Rs,opCode,  // instruction from the fetch stage
+    control_signals[13], // LDM signal from decode stage used in the LDM case
+    Inst_as_Imm_value,   // the current instruction but will be usefull only on LDM case
+    clk,
+    reset,    // CPU reset signal
+    interupt, // CPU interrupt signal
+    control_signals[31], // signal push flags from decode
+    control_signals[30], // signal push pc from decode
+    control_signals[32], // signal pop pc from decode
+    control_signals[33], // signal pop flags from decode
+    Return, // signal pop flags from execute used to make the second nop after return
+    Rd_decode, // Rdst from decode to JMP Rdst on CALL Rdst
     popPc_WB & pop_WB_reg, // selector of the pop pc (return)
-    branchResult,
+    branchResult, 
     unconditionalJump,
-    {16'b0,WB_data},
-    PC_wire
+    {16'b0,WB_data}, // The new PC after POP PC
+    PC_wire // PC output from Fetch stage
     );
     always @(*) begin PC = PC_wire; end
     // register between fetch and decode
     wire [31:0] Next_inst_addr_decode;
     wire [4:0]  opcode_decode;
     wire [2:0]  Rs_decode;
-    
     wire [4:0]  shmnt_decode;
     wire [31:0]  pc_decode;
 
-    // wire[34:0] controlSignals_Call;
-
-    
     // CallStateMachine callStateMachine(clk,reset,opCode,controlSignals_Call,reg_FD_enable_callStateMachine);
 
     wire[35:0] control_signals_if_call_decode;
     reg_fetch_decode reg_fetch_decode(clk,reg_fetch_decode_enable,nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,
     Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode,pc_decode);
 
-    // decode stage
-    
+    //###########################################################################################################
+    //############################################## DECODE STAGE ###############################################
+    //###########################################################################################################
     wire [2:0] WB_address;  // will be initiallized from write back (down)
     wire regWrite_WB;       // will be initiallized from write back (down)
     wire WB_signal_if_not_ret;
@@ -155,7 +161,9 @@ module Processor (
     reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,
     Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute);
 
-    // execute stage
+    //###########################################################################################################
+    //############################################# EXECUTE STAGE ###############################################
+    //###########################################################################################################
     wire [15:0] ALU_Result; // ALU 16-bit Output
     wire [2:0] ccr_out; // flags register
     wire [15:0] src_from_mux; // ALU source
@@ -225,7 +233,7 @@ module Processor (
     wire pushCCR_mem;
     wire popCCR_mem;
     reg_exec_mem reg_exec_mem(
-        // input
+        // inputs
         clk,ALU_Result,src,dst,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
         control_signals_execute[15],
         control_signals_execute[14],
@@ -234,7 +242,7 @@ module Processor (
         control_signals_execute[32],
         control_signals_execute[31],
         control_signals_execute[33],
-        // output
+        // outputs
     ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, 
     push_mem,
     pop_mem,
@@ -245,7 +253,9 @@ module Processor (
     popCCR_mem
     );
 
-    // memory stage
+    //###########################################################################################################
+    //############################################## MEMORY STAGE ###############################################
+    //###########################################################################################################
     wire [15:0] dataFromMemory;
     wire [15:0] MEMWB_ALU_result;
     wire [2:0] MEMWB_Rdst_address;
@@ -271,8 +281,10 @@ module Processor (
     reg_mem_WB reg_mem_WB(clk,dataFromMemory,ALU_result_mem,Rd_mem,memRead_mem,regWrite_mem,shmnt_mem,pop_mem,popPc_mem,popCCR_mem,
     dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB,shmnt_WB,pop_WB,popPc_WB,popCCR_WB);
     
-    assign WB_signal_if_not_ret = ((popPc_WB | popCCR_mem)  & pop_WB)?0:regWrite_WB;
-    // assign WB_signal_if_not_ret = ((shmnt_WB[0] | shmnt_WB[1])  & pop_WB)?0:regWrite_WB;
-    // write back stage
+    assign WB_signal_if_not_ret = ((popPc_WB | popCCR_mem)  & pop_WB)? 0:regWrite_WB;
+
+    //###########################################################################################################
+    //########################################### WRITE BACK STAGE ##############################################
+    //###########################################################################################################
     write_back WriteBack(dataFromMemory_WB,ALU_result_WB,MEMWB_memRead_WB,WB_data);
 endmodule
