@@ -150,8 +150,10 @@ def saveMemory(file):
 
 def run(event=None):
     global instructionMemory
+    global nextInstructionAddress
     saveAssemblyFile()
     instructionMemory = ["0000000000000000"] * (2 ** 20)
+    nextInstructionAddress = 2 ** 5
     f = open(assemblyFilePath, "r")
     f_out = open(outputPath, "w")
     for line in f:
