@@ -7,7 +7,7 @@ module reg_decode_exec(
     input [2:0] Rd,
     input [34:0] control_signals,
     input [2:0] Rs,
-    
+    input int1,
 
 
     output reg [15:0]Imm_value_execute,
@@ -16,9 +16,10 @@ module reg_decode_exec(
     output reg [15:0]Rd_data_execute,
     output reg [2:0] Rd_execute,
     output reg [34:0] control_signals_execute,
-    output reg [2:0] Rs_execute
+    output reg [2:0] Rs_execute,
+    output reg int1_execute
 );
-    reg [93:0] register;
+    reg [94:0] register;
     initial begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
         register = 0;
     end
@@ -36,6 +37,7 @@ module reg_decode_exec(
         register[74:70] <= shmnt;
         register[90:75] <= Imm_value;
         register[93:91] <= Rs;
+        register[94] <= int1;
     end
 
     always @ (posedge clk) // write at the -ve edge
@@ -47,6 +49,7 @@ module reg_decode_exec(
         shmnt_execute           = register[74:70];
         Imm_value_execute       = register[90:75];
         Rs_execute              = register[93:91];
+        int1_execute                    = register[94];
     end
 
 endmodule

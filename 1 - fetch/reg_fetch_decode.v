@@ -7,15 +7,17 @@ module reg_fetch_decode(
     input [2:0] Rd,
     input [4:0] shmnt,
     input [31:0] pc,
+    input int1,
 
     output reg [31:0] Next_inst_addr_decode,
     output reg [4:0] opcode_decode,
     output reg [2:0] Rs_decode,
     output reg [2:0] Rd_decode,
     output reg [4:0] shmnt_decode,
-    output reg [31:0] pc_decode
+    output reg [31:0] pc_decode,
+    output reg int1_decode
 );
-    reg [79:0] register;
+    reg [80:0] register;
     initial begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
         register = 0;
     end
@@ -28,6 +30,7 @@ module reg_fetch_decode(
             register[42:40] <= Rd;
             register[47:43] <= shmnt;
             register[79:48] <= pc;
+            register[80] <= int1;
     end
     end
 
@@ -39,6 +42,7 @@ module reg_fetch_decode(
         Rd_decode = register[42:40];
         shmnt_decode = register[47:43];
         pc_decode = register[79:48];
+        int1_decode = register[80];
     end
 
 endmodule

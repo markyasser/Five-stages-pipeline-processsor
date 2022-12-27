@@ -7,7 +7,7 @@ sim:/ProcessorTb/cpu/clk
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/reset
 add wave -position insertpoint  \
-sim:/ProcessorTb/cpu/interupt
+sim:/ProcessorTb/cpu/interrupt
 
 # show data memory 
 add wave -position insertpoint  \

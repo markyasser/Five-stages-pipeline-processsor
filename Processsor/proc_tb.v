@@ -18,11 +18,18 @@ initial begin
 clk = 1;
 reset = 1;
 interupt = 0;
-In_Port = 32'b1010;
+In_Port = 16'h5;
 #1
 reset = 0;
-
-
+#149
+In_Port = 16'h19;
+#50
+In_Port = 16'hFFFFFFFF;
+#50
+In_Port = 16'hFFFFF320;
+interupt = 1;
+#50
+interupt = 0;
 // #149
 // reset = 1;
 // #1

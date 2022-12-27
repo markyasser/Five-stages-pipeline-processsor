@@ -26,13 +26,18 @@ module Processor (
     input clk,
     input reg [15:0] In_Port,
     input reset,
-    input interupt,
+    input interrupt,
     output reg [15:0] Out_Port
 );
     reg [2:0] CCR; // flag register
     reg [31:0] PC; // PC
 
-    
+    //
+    wire int1_decode;
+    wire int1_execute;
+    wire int1_mem;
+    wire int1_WB;
+    //
     reg [31:0] jumpAddress;
     wire [31:0] nextInstructionAddress;
     wire isImmediate;
@@ -62,6 +67,7 @@ module Processor (
         shmnt_WB_reg = 0;
         pop_WB_reg = 0;
         Return = 0;
+        CCR = 0;
     end
     always@(*)begin 
         branchResult = OrCCR & control_signals_execute[0];
@@ -77,13 +83,15 @@ module Processor (
     wire popPc_WB,popCCR_WB;
     wire [2:0]  Rd_decode;  
     wire pc_enable_call;
-    assign pc_enable_call = !(control_signals[30] | control_signals[31] | control_signals[32] | control_signals[33] | control_signals[34]);
     
     
     //###########################################################################################################
     //############################################### FETCH STAGE ###############################################
     //###########################################################################################################
     //FetchStage Fetch(reg_fetch_decode_enable,32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
+    assign pc_enable_call = !(control_signals[30] | control_signals[31] | control_signals[32] | control_signals[33] | control_signals[34] 
+                            | interrupt | int1_decode | int1_execute | int1_mem | int1_WB);
+
     FetchStage Fetch(
     pc_enable_call & reg_fetch_decode_enable, // enable of the PC
     32'b0,
@@ -95,7 +103,11 @@ module Processor (
     Inst_as_Imm_value,   // the current instruction but will be usefull only on LDM case
     clk,
     reset,    // CPU reset signal
-    interupt, // CPU interrupt signal
+    interrupt, // CPU interrupt signal
+    int1_decode, // CPU interrupt signal from decode stage
+    int1_execute, // CPU interrupt signal from execute stage
+    int1_mem, // CPU interrupt signal from memory stage
+    int1_WB, // CPU interrupt signal from WB stage
     control_signals[31], // signal push flags from decode
     control_signals[30], // signal push pc from decode
     control_signals[32], // signal pop pc from decode
@@ -119,8 +131,8 @@ module Processor (
     // CallStateMachine callStateMachine(clk,reset,opCode,controlSignals_Call,reg_FD_enable_callStateMachine);
 
     wire[35:0] control_signals_if_call_decode;
-    reg_fetch_decode reg_fetch_decode(clk,reg_fetch_decode_enable,nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,
-    Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode,pc_decode);
+    reg_fetch_decode reg_fetch_decode(clk,reg_fetch_decode_enable,nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,interrupt,
+    Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode,pc_decode,int1_decode);
 
     //###########################################################################################################
     //############################################## DECODE STAGE ###############################################
@@ -158,8 +170,8 @@ module Processor (
     wire [2:0]Rs_execute;
     wire [15:0]Rd_data_execute;
     
-    reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,
-    Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute);
+    reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,int1_decode,
+    Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute,int1_execute);
 
     //###########################################################################################################
     //############################################# EXECUTE STAGE ###############################################
@@ -240,6 +252,7 @@ module Processor (
         control_signals_execute[32],
         control_signals_execute[31],
         control_signals_execute[33],
+        int1_execute,
         // outputs
         ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, 
         push_mem,
@@ -248,7 +261,8 @@ module Processor (
         pushPc_mem,
         popPc_mem,
         pushCCR_mem,
-        popCCR_mem
+        popCCR_mem,
+        int1_mem
     );
 
     //###########################################################################################################
@@ -276,8 +290,8 @@ module Processor (
     
     
     // register between memory and write back
-    reg_mem_WB reg_mem_WB(clk,dataFromMemory,ALU_result_mem,Rd_mem,memRead_mem,regWrite_mem,shmnt_mem,pop_mem,popPc_mem,popCCR_mem,
-    dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB,shmnt_WB,pop_WB,popPc_WB,popCCR_WB);
+    reg_mem_WB reg_mem_WB(clk,dataFromMemory,ALU_result_mem,Rd_mem,memRead_mem,regWrite_mem,shmnt_mem,pop_mem,popPc_mem,popCCR_mem,int1_mem,
+    dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB,shmnt_WB,pop_WB,popPc_WB,popCCR_WB,int1_WB);
     
     assign WB_signal_if_not_ret = ((popPc_WB | popCCR_mem)  & pop_WB)? 0:regWrite_WB;
 

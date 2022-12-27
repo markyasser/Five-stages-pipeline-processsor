@@ -32,6 +32,10 @@ module FetchStage (
     clk,
     reset,
     interupt,
+    int1_decode,
+    int1_execute,
+    int1_mem,
+    int1_WB,
     pushflags,
     pushpc,
     popPc,
@@ -60,6 +64,10 @@ input popFlags;
 input pop_flags_exec;
 input [2:0]rdst_call;
 input interupt;
+input int1_decode;
+input int1_execute;
+input int1_mem;
+input int1_WB;
 input return;
 input branchSignal;
 // IF/ID
@@ -106,10 +114,11 @@ reg [31:0]rstOrMux3reg;
 
 InstructionMemory mem(PC, writeData, dataFromMemoryWire, 1'b1, 1'b0, CS, clk);
 wire [15:0] mux_out;
-assign mux_out = (ldm | branchSignal | unconditionalJump | pop_flags_exec)? 16'b0:
-                (pushflags == 1)? {8'b11111_000,rdst_call,5'b00000}:
-                (pushpc == 1)? {8'b11011_000,rdst_call,5'b00000}:
-                
+assign mux_out = (ldm | branchSignal | unconditionalJump | pop_flags_exec | interupt | int1_decode | int1_execute | int1_mem)? 16'b0:
+                (int1_WB == 1)? {16'b11110_000_000_00000}: // if signal int in WB ->  push flags for interrupt
+                (pushflags == 1)? {8'b11111_000,rdst_call,5'b00000}: // if push flags from decode -> push pc
+                (pushpc == 1)? {8'b11011_000,rdst_call,5'b00000}: //  if push pc from decode ->  jmp Rdst
+
                 (popPc == 1)? {8'b11101_000,rdst_call,5'b00000}: 
                 // (popFlags == 1)? {8'b00000_000,rdst_call,5'b00000}:
                 dataFromMemoryWire;
