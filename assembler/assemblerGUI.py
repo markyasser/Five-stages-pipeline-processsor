@@ -56,45 +56,53 @@ def writeBinaryToFile(file, binary):
 
 
 def assemblyToBinary(f_out, line):
-    instructionSplit = re.split(" |, |,", line)
-    instructionArray = []
-    for i in range(len(instructionSplit)):
-        if (instructionSplit[i] != ""):
-            instructionArray.append(instructionSplit[i])
-    print(instructionSplit)
-    # print args
     opcode = "00000"
     rd = "000"
     rs = "000"
     shmnt = "00000"
     imm = ""
-    if (len(instructionArray) == 1):
-        opcode = opcodeMap[instructionArray[0].upper()]
-        writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
-    if (len(instructionArray) == 2):
-        opcode = opcodeMap[instructionArray[0].upper()]
-        if instructionArray[1][0] == 'r':
-            rd = regAddressMap[instructionArray[1].upper()]
+    commentsSplit = re.split("#", line)
+    # print(commentsSplit)
+    if len(commentsSplit) > 0:
+        instructionSplit = re.split(" |, |,", commentsSplit[0])
+        instructionArray = []
+        for i in range(len(instructionSplit)):
+            if (instructionSplit[i] != ""):
+                instructionArray.append(instructionSplit[i])
+        print(instructionArray)
+        # print args
+        opcode = "00000"
+        rd = "000"
+        rs = "000"
+        shmnt = "00000"
+        imm = ""
+        if (len(instructionArray) == 1):
+            opcode = opcodeMap[instructionArray[0].upper()]
             writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
-    elif (len(instructionArray) == 3):
-        if instructionArray[0].upper() == "LDM":
-            opcode = opcodeMap[instructionArray[0].upper()]
-            rd = regAddressMap[instructionArray[1].upper()]
-            imm = f'{int(instructionArray[2]):016b}'
-            writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
-            writeBinaryToFile(f_out, imm)
-        elif instructionArray[0].upper() == "SHL" or instructionArray[0].upper() == "SHR":
-            opcode = opcodeMap[instructionArray[0].upper()]
-            rd = regAddressMap[instructionArray[1].upper()]
-            shmnt = f'{int(instructionArray[2]):05b}'
-            writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
-        else:
+        if (len(instructionArray) == 2):
             opcode = opcodeMap[instructionArray[0].upper()]
             if instructionArray[1][0] == 'r':
-                rs = regAddressMap[instructionArray[1].upper()]
-            if instructionArray[2][0] == 'r':
-                rd = regAddressMap[instructionArray[2].upper()]
+                rd = regAddressMap[instructionArray[1].upper()]
                 writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
+        elif (len(instructionArray) == 3):
+            if instructionArray[0].upper() == "LDM":
+                opcode = opcodeMap[instructionArray[0].upper()]
+                rd = regAddressMap[instructionArray[1].upper()]
+                imm = f'{int(instructionArray[2]):016b}'
+                writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
+                writeBinaryToFile(f_out, imm)
+            elif instructionArray[0].upper() == "SHL" or instructionArray[0].upper() == "SHR":
+                opcode = opcodeMap[instructionArray[0].upper()]
+                rd = regAddressMap[instructionArray[1].upper()]
+                shmnt = f'{int(instructionArray[2]):05b}'
+                writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
+            else:
+                opcode = opcodeMap[instructionArray[0].upper()]
+                if instructionArray[1][0] == 'r':
+                    rs = regAddressMap[instructionArray[1].upper()]
+                if instructionArray[2][0] == 'r':
+                    rd = regAddressMap[instructionArray[2].upper()]
+                    writeBinaryToFile(f_out, opcode+rs+rd+shmnt)
     return opcode, rs, rd, shmnt, imm
 
 
