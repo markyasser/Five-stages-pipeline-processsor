@@ -26,6 +26,7 @@ module Processor (
     input clk,
     input reg [15:0] In_Port,
     input reset,
+    input interupt,
     output reg [15:0] Out_Port
 );
     reg [2:0] CCR; // flag register
@@ -85,7 +86,7 @@ module Processor (
     //FetchStage Fetch(reg_fetch_decode_enable,32'b0,32'b0,isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk);
     FetchStage Fetch(pc_enable_call & reg_fetch_decode_enable,32'b0,{16'b0,dst},isImmediate,nextInstructionAddress,SHMNT,Rd,Rs,opCode,control_signals[13],Inst_as_Imm_value,clk,
     reset,
-    1'b0,
+    interupt,
     control_signals[31],
     control_signals[30],
     control_signals[32],
