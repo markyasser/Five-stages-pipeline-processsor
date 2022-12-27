@@ -10,6 +10,7 @@ module reg_mem_WB(
     input popPc,
     input popCCR,
     input int1,
+    input int2,
 
 
     output reg [15:0] dataFromMemory_WB,
@@ -21,7 +22,8 @@ module reg_mem_WB(
     output reg Pop_WB,
     output reg popPc_WB,
     output reg popCCR_WB,
-    output reg int1_WB
+    output reg int1_WB,
+    output reg int2_WB
 );
     reg [43:0] register;
     initial begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
@@ -39,6 +41,7 @@ module reg_mem_WB(
         register[40] <= popPc;
         register[41] <= popCCR;
         register[42] <= int1;
+        register[43] <= int2;
     end
 
     always @ (posedge clk) 
@@ -53,6 +56,7 @@ module reg_mem_WB(
         popPc_WB = register[40];
         popCCR_WB = register[41];
         int1_WB = register[42];
+        int2_WB = register[43];
     end
 
 endmodule
