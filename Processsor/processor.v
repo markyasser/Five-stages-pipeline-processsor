@@ -56,8 +56,11 @@ module Processor (
     wire [4:0] opCode;
     wire [34:0] control_signals; // will be initialized in decode stage
     wire [15:0] Inst_as_Imm_value;
+
+
     wire reg_fetch_decode_enable;
-    
+    wire reg_fetch_decode_enable_pop_jmp_case;
+
     wire [15:0] dst;
     wire [34:0] control_signals_execute;
     wire OrCCR;
@@ -102,7 +105,7 @@ module Processor (
                             | interrupt | int1_decode | int1_execute | int1_mem | int1_WB);
     assign jumpAddress = (int2_WB == 1'b1)? 0:{16'b0,dst};
     FetchStage Fetch(
-    pc_enable_call & reg_fetch_decode_enable, // enable of the PC
+    pc_enable_call & reg_fetch_decode_enable & reg_fetch_decode_enable_pop_jmp_case, // enable of the PC
     32'b0,
     jumpAddress,  // JMP address
     isImmediate,  // the is a selector to make nop if the instruction inside the decode now is an Imm value
@@ -140,7 +143,9 @@ module Processor (
     // CallStateMachine callStateMachine(clk,reset,opCode,controlSignals_Call,reg_FD_enable_callStateMachine);
 
     wire[35:0] control_signals_if_call_decode;
-    reg_fetch_decode reg_fetch_decode(clk,interrupt,reg_fetch_decode_enable,nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,interrupt,int1_WB,
+    reg_fetch_decode reg_fetch_decode(clk,interrupt,
+    reg_fetch_decode_enable & reg_fetch_decode_enable_pop_jmp_case,
+    nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,interrupt,int1_WB,
     Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode,pc_decode,int1_decode,int2_decode);
 
     //###########################################################################################################
@@ -155,11 +160,14 @@ module Processor (
     wire [15:0] Rs_data;
     wire [15:0] Rd_data;
     
+    
     wire HDU_mux_selector;
-    HDU hdu(Rs_decode,Rd_decode,Rd_execute,control_signals_execute[14],control_signals_execute[2],reg_fetch_decode_enable,HDU_mux_selector);
+    wire mux_selector_pop_jmp_case;
+    HDU hdu(Rs_decode,Rd_decode,Rd_execute,control_signals_execute[14],control_signals_execute[2],reg_fetch_decode_enable,
+    HDU_mux_selector);
     wire [4:0]cu_opcode;
     wire cu_mux_selector;
-    assign cu_mux_selector = HDU_mux_selector | branchResult | unconditionalJump | Return;
+    assign cu_mux_selector = HDU_mux_selector | branchResult | unconditionalJump | Return | mux_selector_pop_jmp_case;
     cu_mux cu_mux(opcode_decode,cu_mux_selector,cu_opcode);
     control_unit CU(cu_opcode,control_signals);
 
@@ -208,12 +216,26 @@ module Processor (
     control_signals_execute[25],
     control_signals_execute[20],
     control_signals_execute[19],
-    control_signals_execute[18],
+    control_signals_execute[18],    
     control_signals_execute[17],
     control_signals_execute[16],
     control_signals_execute[23],
     control_signals_execute[13],
     ALU_Result,ccr_out,In_Port);
+
+
+    wire [15:0] Rs_data_mem;
+    wire [15:0] Rd_data_mem;
+    wire  memRead_mem;
+    wire  memWrite_mem;
+    wire  push_mem;
+    wire  pop_mem;
+    wire [1:0]shmnt_mem;
+    wire pushPc_mem;
+    wire popPc_mem;
+    wire pushCCR_mem;
+    wire popCCR_mem;
+    PopDataHazard popDataHazard(Rd_execute,Rd_mem,pop_mem,memRead_mem,branchResult | unconditionalJump,reg_fetch_decode_enable_pop_jmp_case,mux_selector_pop_jmp_case);
 
     //---------write to OUT port------------//
     wire [15:0] dst_to_out_port;
@@ -240,17 +262,7 @@ module Processor (
     return_CCR == 1)begin CCR = (return_CCR == 1)? WB_data : ccr_out; end end
 
     // register between execute and memory
-    wire [15:0] Rs_data_mem;
-    wire [15:0] Rd_data_mem;
-    wire  memRead_mem;
-    wire  memWrite_mem;
-    wire  push_mem;
-    wire  pop_mem;
-    wire [1:0]shmnt_mem;
-    wire pushPc_mem;
-    wire popPc_mem;
-    wire pushCCR_mem;
-    wire popCCR_mem;
+
     reg_exec_mem reg_exec_mem(
         // inputs
         clk,ALU_Result,src,dst,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],

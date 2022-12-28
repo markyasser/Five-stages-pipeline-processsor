@@ -154,7 +154,7 @@ always @(*)begin
 end
 
 always @(*)begin CS = ~reset; end 
-always @(posedge clk, negedge enable,posedge reset,return,enable) begin
+always @(posedge clk, negedge enable,posedge reset,return) begin
     if(enable == 1) begin 
         rstOrMux3reg = rstOrMux3;
         PC = rstOrMux3reg;

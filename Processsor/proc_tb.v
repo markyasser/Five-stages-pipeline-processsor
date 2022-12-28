@@ -42,10 +42,10 @@ In_Port = 16'hFFFFF320;
 
 
 
-#143
-reset = 1;
-#1
-reset = 0;
+// #149
+// reset = 1;
+// #1
+// reset = 0;
 
 end
 

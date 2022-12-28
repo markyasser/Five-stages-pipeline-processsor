@@ -220,7 +220,7 @@ Resolution = ps
 UserTimeUnit = default
 
 ; Default run length
-RunLength = 2 ns
+RunLength = 800 ps
 
 ; Maximum iterations that can be run without advancing simulation time
 IterationLimit = 5000
@@ -254,7 +254,7 @@ BreakOnAssertion = 3
 
 ; Default radix for all windows and commands...
 ; Set to symbolic, ascii, binary, octal, decimal, hex, unsigned
-DefaultRadix = binary
+DefaultRadix = hexadecimal
 
 ; VSIM Startup command
 ; Startup = do startup.do
