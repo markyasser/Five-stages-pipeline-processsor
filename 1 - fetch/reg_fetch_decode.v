@@ -1,5 +1,6 @@
 module reg_fetch_decode(
     input clk,
+    input int,
     input enable,
     input [31:0] Next_inst_addr,
     input [4:0] opcode,
@@ -23,7 +24,7 @@ module reg_fetch_decode(
     initial begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
         register = 0;
     end
-    always @ (negedge clk) // write at the -ve edge
+    always @ (negedge clk,posedge int) // write at the -ve edge
     begin
         if(enable == 1)begin
             register[31:0] <= Next_inst_addr;

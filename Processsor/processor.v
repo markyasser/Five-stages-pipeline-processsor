@@ -26,7 +26,7 @@ module Processor (
     input clk,
     input reg [15:0] In_Port,
     input reset,
-    input interrupt,
+    input int,
     output reg [15:0] Out_Port
 );
     reg [2:0] CCR; // flag register
@@ -37,12 +37,16 @@ module Processor (
     wire int1_execute;
     wire int1_mem;
     wire int1_WB;
-
-
+    reg interrupt;
     wire int2_decode;
     wire int2_execute;
     wire int2_mem;
     wire int2_WB;
+
+    always @(posedge clk,posedge int) begin 
+        if(interrupt == 1)begin interrupt = 0; end
+        else begin interrupt = int; end
+    end
     //
     wire [31:0] nextInstructionAddress;
     wire isImmediate;
@@ -66,7 +70,7 @@ module Processor (
     reg [1:0]shmnt_WB_reg;
     reg pop_WB_reg;
     wire [15:0] WB_data;    // will be initiallized from write back (down)
-    initial begin
+    always@(posedge reset) begin
         branchResult = 0; 
         unconditionalJump = 0; 
         shmnt_WB_reg = 0;
@@ -136,7 +140,7 @@ module Processor (
     // CallStateMachine callStateMachine(clk,reset,opCode,controlSignals_Call,reg_FD_enable_callStateMachine);
 
     wire[35:0] control_signals_if_call_decode;
-    reg_fetch_decode reg_fetch_decode(clk,reg_fetch_decode_enable,nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,interrupt,int1_WB,
+    reg_fetch_decode reg_fetch_decode(clk,interrupt,reg_fetch_decode_enable,nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,interrupt,int1_WB,
     Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode,pc_decode,int1_decode,int2_decode);
 
     //###########################################################################################################

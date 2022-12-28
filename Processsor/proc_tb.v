@@ -28,23 +28,24 @@ In_Port = 16'hFFFFFFFF;
 #50
 In_Port = 16'hFFFFF320;
 // make interrupt in cycle 6    
-interupt = 1;
-#50
-interupt = 0;
+// #30
+// interupt = 1;
+// #20
+// interupt = 0;
 
 
-#(10*50)
-// make interrupt in cycle 17
-interupt = 1;
-#50
-interupt = 0;
+// #(10*50)
+// // make interrupt in cycle 17
+// interupt = 1;
+// #50
+// interupt = 0;
 
 
 
-// #149
-// reset = 1;
-// #1
-// reset = 0;
+#143
+reset = 1;
+#1
+reset = 0;
 
 end
 
