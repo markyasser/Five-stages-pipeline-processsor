@@ -44,7 +44,9 @@ module Processor (
     wire int2_decode;
     wire int2_execute;
     wire int2_mem;
-    wire int2_WB;
+    wire int2_WB; // this signal will be the enable of the interrupt signal to jump to address 0 instead of Rdst
+
+
     //------------------fetch------------------
     wire [31:0] nextInstructionAddress;
     wire isImmediate;
@@ -54,8 +56,9 @@ module Processor (
     wire [4:0] opCode;
     wire reg_fetch_decode_enable;
     wire [31:0] PC_wire;
-    wire pc_enable_call;
-    wire [31:0]jumpAddress;
+    wire pc_enable_call; // the enable of the PC which is the oring of the 8 signals in the fetch stage design
+
+
     //------------------decode------------------
     wire [31:0] Next_inst_addr_decode;
     wire [15:0] Inst_as_Imm_value;    // has the instruction that represents the immediate value
@@ -70,27 +73,31 @@ module Processor (
     wire [4:0]cu_opcode;   // represents the wire that enters the Control Unit
     wire cu_mux_selector;  // represents the selector of the mux before the Control Unit
     wire [34:0] control_signals; // Control Signals of the decode stage
+
+
     //------------------execute------------------
-    wire [15:0] dst; // The 1st input of the ALU
-    wire [15:0] src; // The 2nd input of the ALU
+    wire [34:0] control_signals_execute; 
     wire [15:0]Imm_value_execute; // Immediate value forwarded from Fetch stage
     wire [4:0]shmnt_execute;
     wire [15:0]Rs_data_execute;
     wire [2:0]Rs_execute;
     wire [2:0]Rd_execute;
     wire [15:0]Rd_data_execute;
-    wire return_CCR;
+    wire return_CCR; // selector that returns the value of CCR after pop flags
     wire [15:0] ALU_Result; // ALU 16-bit Output
     wire [2:0] ccr_out; // flags register
-    wire [15:0] src_from_mux; // ALU source
-    wire [1:0]selectorFU_src;
-    wire [1:0]selectorFU_dst;
-    wire [15:0] dst_to_out_port;
-    wire [34:0] control_signals_execute;
-    wire OrCCR;
-    reg branchResult;
+    wire [15:0] src_from_mux; // the output of the mux that selects either Rs data execute OR Immediate value
+    wire [1:0]selectorFU_src; // output of the FU for source
+    wire [1:0]selectorFU_dst; // output of the FU for destination
+    wire [15:0] dst_to_out_port; // the data to be writen to output port
+    wire [15:0] dst; // The 1st input of the ALU
+    wire [15:0] src; // The 2nd input of the ALU
+    wire OrCCR; // Oring of the 3 bit of the CCR
+    reg branchResult; // Oring of the 3 bit of the CCR anded with the branch singal
     reg unconditionalJump;
-    reg Return;
+    reg Return; // return signal in the execute
+    wire [31:0]jumpAddress; // JMP address from execute stage
+
     //------------------memory------------------
     wire [15:0] Rs_data_mem;
     wire [15:0] Rd_data_mem;
@@ -106,12 +113,14 @@ module Processor (
     wire [15:0] ALU_result_mem; // ALU RESULT FROM MEMORY STAGE
     wire [2:0] Rd_mem; // Rd from memory stage
     wire regWrite_mem; //regWrite_WB is WB signal from WB stage
-    wire [15:0] dataFromMemory;
-    wire [15:0] MEMWB_ALU_result;
-    wire [2:0] MEMWB_Rdst_address;
+    wire [15:0] MEMWB_ALU_result; // the ALU output at the memory stage 
+    wire [15:0] dataFromMemory; // the Read data from memory
+    wire [2:0] MEMWB_Rdst_address; // Rd data as address at memory stage
     wire MEMWB_memRead;
     wire MEMWB; 
     wire [31:0] SP_wire;
+
+
     //------------------write back------------------
     wire [1:0]shmnt_WB;
     wire popPc_WB,popCCR_WB;
@@ -289,6 +298,7 @@ module Processor (
         dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,SP_wire,clk);
     reg_mem_WB reg_mem_WB(clk,dataFromMemory,ALU_result_mem,Rd_mem,memRead_mem,regWrite_mem,shmnt_mem,pop_mem,popPc_mem,popCCR_mem,int1_mem,int2_mem,
     dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB,shmnt_WB,pop_WB,popPc_WB,popCCR_WB,int1_WB,int2_WB);
+    
     //###########################################################################################################
     //########################################### WRITE BACK STAGE ##############################################
     //###########################################################################################################
