@@ -2,7 +2,29 @@
 
 ### Performance
 
+##### All instructions are executed in 5 cycles except :
+
+- _LDM_: takes 1 additional cycle (LDM, stall)
+- _CALL_ : takes 4 additional cycle (PUSH flags, PUSH pc, JMP, stall, stall)
+- _RET_: takes 3 additional cycle (POP PC, POP Flags, stall, stall)
+- _RTI_: takes 3 additional cycle (POP PC, POP Flags, stall, stall)
+
 ### Handling Hazards
+
+- _Data hazards_ : Solved by Full forwarding
+- _Load use case_ : Solved by stalling for one cycle
+- _POP Rdst - JMP Rdst_ : Solved by stalling for one cycle
+- _POP Rdst - CALL Rdst_ : Solved by stalling for one cycle
+- _POP Rdst - STD Rsrc, Rdst_ : Solved by stalling for one cycle
+- _POP Rdst - ALU Rsrc, Rdst_ : Solved by stalling for one cycle
+- _POP Rdst - OUT Rdst_ : Solved by stalling for one cycle
+
+### Assembler
+
+- Go to _assembler_ directory
+- Open command prompt
+- write `python3 assemblerGui.py`
+- now you can write you Assembly code
 
 ### Instruction set
 

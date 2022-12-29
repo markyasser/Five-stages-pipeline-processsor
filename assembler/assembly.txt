@@ -1,4 +1,4 @@
 inc r1
 push r1
 pop r2
-jmp r2
+out r2

@@ -5,6 +5,9 @@ module HDU(
     input pop_alu,
     input memRead_alu,
     input jmp_decode,
+    input memWrite_decode,
+    input regWrite_decode,
+    input out_decode,
     
     output reg load_use_case_enable,
     output mux_selector
@@ -12,7 +15,10 @@ module HDU(
 always@(memRead_alu)
 begin 
     load_use_case_enable =  ((Rdst_alu == Rs_decode || Rdst_alu == Rd_decode) && (!pop_alu && memRead_alu)) | // Load use case
-                            ((Rdst_alu == Rd_decode) && pop_alu & memRead_alu & jmp_decode)? 0: 1;          // Pop JMP case
+                            ((Rdst_alu == Rd_decode) && pop_alu & memRead_alu & jmp_decode)| // Pop JMP case
+                            ((Rdst_alu == Rd_decode) && pop_alu & memRead_alu & regWrite_decode)| // Pop ALU case
+                            ((Rdst_alu == Rd_decode) && pop_alu & memRead_alu & out_decode)| // Pop OUT case
+                            ((Rdst_alu == Rs_decode || Rdst_alu == Rd_decode) && pop_alu & memRead_alu & memWrite_decode)? 0: 1; // POP STD case     
 end
 assign mux_selector = ~load_use_case_enable;
 initial begin

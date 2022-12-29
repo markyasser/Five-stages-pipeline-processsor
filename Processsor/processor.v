@@ -229,6 +229,9 @@ module Processor (
         control_signals_execute[14] & !control_signals_execute[31], //if the inst in the exec is pop but not pop flags to avoidconfusion with ret
         control_signals_execute[2],  //if the inst in the exec is mem read
         control_signals[7] | control_signals[8] | control_signals[9] | control_signals[10], // if any jump in decode
+        control_signals[1],
+        control_signals[3],
+        control_signals[24],
         reg_fetch_decode_enable,
         HDU_mux_selector);
     assign cu_mux_selector = HDU_mux_selector | branchResult | unconditionalJump | Return;
