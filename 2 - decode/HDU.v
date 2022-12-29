@@ -24,21 +24,21 @@ initial begin
 endmodule
 
 module PopDataHazard (
-    input [2:0]Rd_execute,//of jump
-    input [2:0]Rd_mem,//of pop
-    input pop_mem,
-    input memRead_mem,
-    input jmp,
+    input [2:0]Rd_execute,
+    input [2:0]Rd_decode,
+    input pop_exec,
+    input memRead_exec,
+    input jmp_decode,
 
     output reg pop_case,
     output mux_selector_pop_case
 
 );
-always @(*) begin
-        pop_case = ((Rd_execute == Rd_mem) && (pop_mem && memRead_mem) && jmp)?0:1;
+always @(pop_exec) begin
+        pop_case = ((Rd_execute == Rd_decode) && pop_exec & memRead_exec & jmp_decode)? 0:1;
 end
 assign mux_selector_pop_case = ~pop_case;
-    initial begin
-        pop_case = 1;
-    end
+        initial begin
+            pop_case = 1;
+        end
 endmodule

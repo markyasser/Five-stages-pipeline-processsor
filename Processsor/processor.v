@@ -165,6 +165,12 @@ module Processor (
     wire mux_selector_pop_jmp_case;
     HDU hdu(Rs_decode,Rd_decode,Rd_execute,control_signals_execute[14],control_signals_execute[2],reg_fetch_decode_enable,
     HDU_mux_selector);
+    PopDataHazard popDataHazard(Rd_execute,Rd_decode,
+    control_signals_execute[14] & !control_signals_execute[31], //if the inst in the exec is pop but not pop flags to avoidconfusion with ret
+    control_signals_execute[2], //if the inst in the exec is mem read
+    control_signals[7] | control_signals[8] | control_signals[9] | control_signals[10], // if any jump in decode
+    reg_fetch_decode_enable_pop_jmp_case,mux_selector_pop_jmp_case);
+    
     wire [4:0]cu_opcode;
     wire cu_mux_selector;
     assign cu_mux_selector = HDU_mux_selector | branchResult | unconditionalJump | Return | mux_selector_pop_jmp_case;
@@ -235,7 +241,7 @@ module Processor (
     wire popPc_mem;
     wire pushCCR_mem;
     wire popCCR_mem;
-    PopDataHazard popDataHazard(Rd_execute,Rd_mem,pop_mem,memRead_mem,branchResult | unconditionalJump,reg_fetch_decode_enable_pop_jmp_case,mux_selector_pop_jmp_case);
+    
 
     //---------write to OUT port------------//
     wire [15:0] dst_to_out_port;

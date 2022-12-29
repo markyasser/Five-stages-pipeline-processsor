@@ -1,4 +1,8 @@
-inc r1
+ldm r1,27
 push r1
 pop r2
-jmp r2
+call r2
+inc r3
+sub r1,r2
+shl r1
+ret

@@ -2,12 +2,18 @@ vlog processor.v
 vlog proc_tb.v
 vsim work.ProcessorTb
 
+
+###########################################################################################################
+################################################  DEBUGING  ###############################################
+###########################################################################################################
+
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/clk
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/reset
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/interrupt
+
 
 # show data memory 
 add wave -position insertpoint  \
@@ -69,4 +75,47 @@ sim:/ProcessorTb/cpu/registers/write_enable
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/memory_stage/mem/write \
 sim:/ProcessorTb/cpu/memory_stage/mem/read
+
 run
+
+
+
+
+
+
+
+
+
+
+###########################################################################################################
+################################################  RELEASE  ################################################
+###########################################################################################################
+
+# # CLK
+# add wave -position insertpoint  \
+# sim:/ProcessorTb/cpu/clk
+# # RESET
+# add wave -position insertpoint  \
+# sim:/ProcessorTb/cpu/reset
+# # INTERRUPT
+# add wave -position insertpoint  \
+# sim:/ProcessorTb/cpu/interrupt
+# # PC
+# add wave -position insertpoint  \
+# sim:/ProcessorTb/cpu/Fetch/PC
+# # SP
+# add wave -position insertpoint  \
+# sim:/ProcessorTb/cpu/memory_stage/sp
+# # Register File 
+# add wave -position insertpoint  \
+# sim:/ProcessorTb/cpu/registers/regFile
+
+# # FLAGS
+# add wave -position insertpoint  \
+# sim:/ProcessorTb/cpu/CCR
+# # OUTPORT PORT
+# add wave -position insertpoint  \
+# sim:/ProcessorTb/cpu/Out_Port
+# # IN PORT
+# add wave -position insertpoint  \
+# sim:/ProcessorTb/cpu/In_Port
