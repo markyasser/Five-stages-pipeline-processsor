@@ -14,14 +14,13 @@ module MemoryStage (
     pushPc,
     pushCCR,
     pc,
-    intCounterValue,
-    intSignalFromCounter,
     flagReg,
     dataFromMemory,
     MEMWB_ALU_result,
     MEMWB_Rdst_address,
     MEMWB_memRead,
     MEMWB_WB,
+    sp,
     clk
     // TODO: output new PC
 );
@@ -41,8 +40,6 @@ input pushPc;
 input pushCCR;
 input clk;
 // SP of processor
-input [1:0]intCounterValue;
-input intSignalFromCounter;
 input [15:0]pc;
 input [2:0]flagReg;
 // MEMWB
@@ -52,7 +49,7 @@ output reg [15:0] MEMWB_ALU_result;
 output reg [2:0] MEMWB_Rdst_address;
 output reg MEMWB_memRead;
 output reg MEMWB_WB;
-reg [31:0]sp;
+output reg [31:0]sp;
 reg CS;
 wire [15:0] dataFromMemoryWire;
 // wire isMemory;
@@ -101,11 +98,8 @@ assign writeDataInCaseMemOrStack =
     (sel_stackOrMem == 1'b0) ? Rdst_value :
     (sel_stackOrMem == 1'b1) ? Rsrc_value : 16'bz;
 
-assign writeData_beforefinal =
-    (intSignalFromCounter == 1'b0) ? writeDataInCaseMemOrStack :
-    (intSignalFromCounter == 1'b1) ? writeDataInCaseOfInt : 16'bz;
 
-assign writeData =  (!pushPc & !pushCCR)? writeData_beforefinal:
+assign writeData =  (!pushPc & !pushCCR)? writeDataInCaseMemOrStack:
                     (pushPc  & !pushCCR)? pc:
                     (!pushPc &  pushCCR)? {13'b0,flagReg} : 16'bz;
 // assign writeData =  (shmnt_mem == 2'b00)? writeData_beforefinal:
@@ -122,10 +116,6 @@ always @(posedge clk) begin
     MEMWB_Rdst_address = Rdst_address;
     MEMWB_memRead = memRead;
     MEMWB_WB = WB;
-    // Data memory
-    // if isMemory = 1, set CS (chip select) of memory to 1, else CS = 0
-    //CS = 1;
-   
 end
 always @(negedge clk) begin
     // update sp in case of push or pop

@@ -18,8 +18,8 @@
 // endmodule
 
 module FetchStage (
+    clk,
     enable,
-    intRegAddress,
     jumpAddress,
     isImmediate,
     nextInstructionAddress,
@@ -29,7 +29,6 @@ module FetchStage (
     opCode,
     LDM_signal,
     Inst_as_Imm_value,
-    clk,
     reset,
     interupt,
     int1_decode,
@@ -49,7 +48,6 @@ module FetchStage (
     PC_of_cpu
 );
 // input
-input [31:0] intRegAddress;
 input [31:0] jumpAddress;
 input [31:0] PCFromPop;
 input LDM_signal;
@@ -119,8 +117,8 @@ assign mux_out = (ldm | branchSignal | unconditionalJump | pop_flags_exec | inte
                 (pushflags == 1)? {8'b11111_000,rdst_call,5'b00000}: // if push flags from decode -> push pc
                 (pushpc == 1)? {8'b11011_000,rdst_call,5'b00000}: //  if push pc from decode ->  jmp Rdst
 
-                (popPc == 1)? {8'b11101_000,rdst_call,5'b00000}: 
-                // (popFlags == 1)? {8'b00000_000,rdst_call,5'b00000}:
+                (popPc == 1)? {8'b11101_000,rdst_call,5'b00000}:  //  if pop pc from decode ->  pop flags
+                
                 dataFromMemoryWire;
 
 assign Inst_as_Imm_value = dataFromMemoryWire;

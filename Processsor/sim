@@ -25,11 +25,11 @@ sim:/ProcessorTb/cpu/registers/regFile
 
 # PC and SP
 add wave -position insertpoint  \
-sim:/ProcessorTb/cpu/Fetch/PC
+sim:/ProcessorTb/cpu/PC
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/Fetch/enable
 add wave -position insertpoint  \
-sim:/ProcessorTb/cpu/memory_stage/sp
+sim:/ProcessorTb/cpu/SP
 
 # show flag register
 add wave -position insertpoint  \
@@ -105,7 +105,7 @@ run
 # sim:/ProcessorTb/cpu/Fetch/PC
 # # SP
 # add wave -position insertpoint  \
-# sim:/ProcessorTb/cpu/memory_stage/sp
+# sim:/ProcessorTb/cpu/SP
 # # Register File 
 # add wave -position insertpoint  \
 # sim:/ProcessorTb/cpu/registers/regFile
