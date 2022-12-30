@@ -1,5 +1,6 @@
 module MemoryStage (
     // ALU_zeroFlag,
+    reset,
     shmnt_mem,
     ALU_result,
     Rsrc_value,
@@ -33,6 +34,7 @@ input [2:0] Rdst_address;
 // input ALU_zeroFlag;
 input memRead;
 input memWrite;
+input reset;
 input WB;
 input push;
 input pop;
@@ -67,7 +69,7 @@ wire sel_readOrWrite;
 wire [31:0] address_pushOrPop;
 wire [31:0] address_readOrWrite;
 // assign isMemory = memRead | memWrite;
-initial begin
+always @(posedge reset) begin
     sp = 32'b11111111111111111111111111111111;
 end
 assign sp_push = sp;

@@ -100,13 +100,6 @@ wire [15:0] dataFromMemoryWire;
 
 reg ldm;
 reg [31:0]rstOrMux3reg;
-// ----------------for testing--------------------
-// initial begin
-//     // PC = 32'b00100000;
-//     ldm = 0;
-//     rstOrMux3reg = 32'b00011111;
-// end
-// -----------------------------------------------
 
 // Instruction memory
 

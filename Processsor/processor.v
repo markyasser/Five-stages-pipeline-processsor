@@ -226,7 +226,7 @@ module Processor (
 //###########################################################################################################
     
 
-    HDU hdu(Rs_decode,Rd_decode,Rd_execute,
+    HDU hdu(reset,Rs_decode,Rd_decode,Rd_execute,
         control_signals_execute[32], // if the inst in the exec is pop flags to avoid confusion with ret
         control_signals_execute[33], // if the inst in the exec is pop pc to avoid confusion with ret
         control_signals_execute[14], // if the inst in the exec is pop 
@@ -294,7 +294,7 @@ module Processor (
 //###########################################################################################################
 //############################################## MEMORY STAGE ###############################################
 //###########################################################################################################
-    MemoryStage memory_stage(shmnt_mem,ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memWrite_mem,memRead_mem,regWrite_mem,
+    MemoryStage memory_stage(reset,shmnt_mem,ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memWrite_mem,memRead_mem,regWrite_mem,
         push_mem, //push
         pop_mem,  //pop
         pushPc_mem,

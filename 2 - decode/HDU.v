@@ -1,4 +1,5 @@
 module HDU(
+    input reset,
     input [2:0]Rs_decode,
     input [2:0]Rd_decode,
     input [2:0]Rdst_alu,
@@ -21,6 +22,7 @@ begin
                             ((Rdst_alu == Rs_decode || Rdst_alu == Rd_decode) && pop_alu & !pop_flags_alu & memRead_alu & memWrite_decode)? 0: 1; // POP STD case     
 end
 assign mux_selector = ~load_use_case_enable;
-initial begin
-    load_use_case_enable = 1; end
+always@(posedge reset) begin
+    load_use_case_enable = 1; 
+end
 endmodule

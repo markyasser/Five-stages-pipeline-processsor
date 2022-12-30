@@ -4,10 +4,11 @@ ADD R1,R4
 OUT R4
 RTI
 .ORG 20 #this is the instructions code
-ldm r0,27
+ldm r0,28
 dec r3
 inc r1
-call r0
+inc r1
+jmp r0
 inc r1
 dec r3
 add r0,r1
