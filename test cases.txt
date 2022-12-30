@@ -13,3 +13,47 @@ ret
 output :
 26 cycle 
 //---------------------------------//
+
+- testing INT at CALL (INT came while the JMP in the memory stage of push flags)  
+.ORG 0 #this is the interrupt code
+AND R3,R4
+ADD R1,R4
+OUT R4
+RTI
+.ORG 20 #this is the instructions code
+ldm r0,27
+dec r3
+inc r1
+call r0
+inc r1
+dec r3
+add r0,r1
+ret
+
+output :
+finishes at 1950
+Successs if the INT came after fetch of the Push PC
+FAILED : if the INT came while the JMP is in the fetch of the second NOP
+//---------------------------------//
+
+- testing INT and JMP
+.ORG 0 #this is the interrupt code
+AND R3,R4
+ADD R1,R4
+OUT R4
+RTI
+.ORG 20 #this is the instructions code
+ldm r0,27
+dec r3
+inc r1
+jmp r0
+inc r1
+dec r3
+add r0,r1
+inc r1
+inc r2
+
+output : 
+Successs if the INT came before the JMP is in the fetch of the second NOP (finishes at about 1650 ps)
+FAILED : if the INT came while the JMP is in the fetch of the second NOP
+//---------------------------------//

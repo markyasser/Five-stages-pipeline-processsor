@@ -1,4 +1,14 @@
+.ORG 0 #this is the interrupt code
+AND R3,R4
+ADD R1,R4
+OUT R4
+RTI
+.ORG 20 #this is the instructions code
+ldm r0,27
+dec r3
 inc r1
-push r1
-pop r2
-out r2
+call r0
+inc r1
+dec r3
+add r0,r1
+ret

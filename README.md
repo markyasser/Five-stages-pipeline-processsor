@@ -18,6 +18,10 @@
 - _POP Rdst - STD Rsrc, Rdst_ : Solved by stalling for one cycle
 - _POP Rdst - ALU Rsrc, Rdst_ : Solved by stalling for one cycle
 - _POP Rdst - OUT Rdst_ : Solved by stalling for one cycle
+- _INT - CALL_ : Handled by enabling the write to PC while preparing to go to ISR (Not handled if the INT came before fetching Push PC)
+- _INT - JMP_ : Handled by enabling the write to PC while preparing to go to ISR (Not handled if the INT came at the end of the second NOP of the JMP)
+- _INT - RET_ : Handled by enabling the write to PC while preparing to go to ISR
+- _INT - RTI_ : Handled by enabling the write to PC while preparing to go to ISR
 
 ### Assembler
 

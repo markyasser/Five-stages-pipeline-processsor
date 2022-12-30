@@ -186,7 +186,7 @@ module Processor (
 //############################################### FETCH STAGE ###############################################
 //###########################################################################################################
     assign pc_enable_call = !(control_signals[30] | control_signals[31] | control_signals[32] | control_signals[33] | control_signals[34] 
-                            | interrupt | int1_decode | int1_execute | int1_mem | int1_WB);
+                            | interrupt | int1_decode | int1_execute | int1_mem | int1_WB)  | popPc_WB | branchResult | unconditionalJump;
     assign jumpAddress = (int2_WB == 1'b1)? 0:{16'b0,dst};
     FetchStage Fetch(
         clk,
@@ -226,8 +226,10 @@ module Processor (
     
 
     HDU hdu(Rs_decode,Rd_decode,Rd_execute,
-        control_signals_execute[14] & !control_signals_execute[31], //if the inst in the exec is pop but not pop flags to avoidconfusion with ret
-        control_signals_execute[2],  //if the inst in the exec is mem read
+        control_signals_execute[32], // if the inst in the exec is pop flags to avoid confusion with ret
+        control_signals_execute[33], // if the inst in the exec is pop pc to avoid confusion with ret
+        control_signals_execute[14], // if the inst in the exec is pop 
+        control_signals_execute[2],  // if the inst in the exec is mem read
         control_signals[7] | control_signals[8] | control_signals[9] | control_signals[10], // if any jump in decode
         control_signals[1],
         control_signals[3],
@@ -305,6 +307,6 @@ module Processor (
     //###########################################################################################################
     //########################################### WRITE BACK STAGE ##############################################
     //###########################################################################################################
-    assign WB_signal_if_not_ret = ((popPc_WB | popCCR_mem)  & pop_WB)? 0:regWrite_WB;
+    assign WB_signal_if_not_ret = ((popPc_WB | popCCR_WB)  & pop_WB)? 0:regWrite_WB;
     write_back WriteBack(dataFromMemory_WB,ALU_result_WB,MEMWB_memRead_WB,WB_data);
 endmodule

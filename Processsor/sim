@@ -75,7 +75,10 @@ sim:/ProcessorTb/cpu/registers/write_enable
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/memory_stage/mem/write \
 sim:/ProcessorTb/cpu/memory_stage/mem/read
-
+add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/unconditionalJump
+add wave -position insertpoint  \
+sim:/ProcessorTb/cpu/branchResult
 run
 
 
