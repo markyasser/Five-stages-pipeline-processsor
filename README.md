@@ -8,7 +8,7 @@
 - _CALL_ : takes 4 additional cycle (PUSH flags, PUSH pc, JMP, stall, stall)
 - _RET_: takes 3 additional cycle (POP PC, POP Flags, stall, stall)
 - _RTI_: takes 3 additional cycle (POP PC, POP Flags, stall, stall)
-- _INT_: takes 8 additional cycle (POP PC, POP Flags, stall, stall)
+- _INT_: takes 8 additional cycle (4 stalls,POP PC, POP Flags, stall, stall)
 
 ### Handling Hazards
 
