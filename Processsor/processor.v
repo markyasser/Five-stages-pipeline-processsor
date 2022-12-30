@@ -169,6 +169,7 @@ module Processor (
         pop_WB_reg = 0;
         Return = 0;
         CCR = 0;
+        Out_Port = 0;
     end
     always@(*)begin 
         branchResult = OrCCR & control_signals_execute[0];
