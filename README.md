@@ -8,16 +8,17 @@
 - _CALL_ : takes 4 additional cycle (PUSH flags, PUSH pc, JMP, stall, stall)
 - _RET_: takes 3 additional cycle (POP PC, POP Flags, stall, stall)
 - _RTI_: takes 3 additional cycle (POP PC, POP Flags, stall, stall)
+- _INT_: takes 8 additional cycle (POP PC, POP Flags, stall, stall)
 
 ### Handling Hazards
 
-- _Data hazards_ : Solved by Full forwarding
-- _Load use case_ : Solved by stalling for one cycle
-- _POP Rdst - JMP Rdst_ : Solved by stalling for one cycle
-- _POP Rdst - CALL Rdst_ : Solved by stalling for one cycle
-- _POP Rdst - STD Rsrc, Rdst_ : Solved by stalling for one cycle
-- _POP Rdst - ALU Rsrc, Rdst_ : Solved by stalling for one cycle
-- _POP Rdst - OUT Rdst_ : Solved by stalling for one cycle
+- _Data hazards_ : Handled by Full forwarding
+- _Load use case_ : Handled by stalling for one cycle
+- _POP Rdst - JMP Rdst_ : Handled by stalling for one cycle
+- _POP Rdst - CALL Rdst_ : Handled by stalling for one cycle
+- _POP Rdst - STD Rsrc, Rdst_ : Handled by stalling for one cycle
+- _POP Rdst - ALU Rsrc, Rdst_ : Handled by stalling for one cycle
+- _POP Rdst - OUT Rdst_ : Handled by stalling for one cycle
 - _INT - CALL_ : Handled by enabling the write to PC while preparing to go to ISR (Not handled if the INT came before fetching Push PC)
 - _INT - JMP_ : Handled by enabling the write to PC while preparing to go to ISR (Not handled if the INT came at the end of the second NOP of the JMP)
 - _INT - RET_ : Handled by enabling the write to PC while preparing to go to ISR
@@ -25,7 +26,7 @@
 
 ### Assembler
 
-- Go to _assembler_ directory
+- Go to **_assembler_** directory
 - Open command prompt
 - write `python3 assemblerGui.py`
 - now you can write you Assembly code
