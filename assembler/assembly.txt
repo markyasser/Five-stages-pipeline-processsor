@@ -3,13 +3,15 @@ AND R3,R4
 ADD R1,R4
 OUT R4
 RTI
-.ORG 20 #this is the instructions code
-ldm r0,28
+.ORG 20 #this is the instructions code 20H = 32D
+ldm r0,29
 dec r3
-inc r1
-inc r1
-jmp r0
-inc r1
+inc r1 
+inc r1 
+call r0 #mkan call r0
+inc r7
 dec r3
-add r0,r1
-ret
+jmp r1
+add r0,r1 #r1 = 29 + 2 = 2B
+ret#2A
+inc r7 #2B

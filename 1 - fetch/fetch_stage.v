@@ -45,7 +45,8 @@ module FetchStage (
     branchSignal,
     unconditionalJump,
     PCFromPop,
-    PC_of_cpu
+    PC_of_cpu,
+    pcBeforeInterrupt_fetch,
 );
 // input
 input [31:0] jumpAddress;
@@ -77,6 +78,7 @@ output reg [2:0] Rs;
 output reg [4:0] opCode;
 output reg [15:0] Inst_as_Imm_value;
 output reg [31:0] PC_of_cpu;
+output reg [31:0] pcBeforeInterrupt_fetch;
 // TODO: make a mux and set PC value from MUX
 // TODO: make ALU to inrement PC by 1 ---> OR 2 ?
 reg [31:0] PC;
@@ -101,11 +103,11 @@ wire [15:0] dataFromMemoryWire;
 reg ldm;
 reg [31:0]rstOrMux3reg;
 
-// Instruction memory
 
+// Instruction memory
 InstructionMemory mem(PC, writeData, dataFromMemoryWire, 1'b1, 1'b0, CS, clk);
 wire [15:0] mux_out;
-assign mux_out = (ldm | branchSignal | unconditionalJump | pop_flags_exec | interupt | int1_decode | int1_execute | int1_mem)? 16'b0:
+assign mux_out = (ldm | branchSignal | unconditionalJump | pop_flags_exec  | int1_decode | int1_execute | int1_mem)? 16'b0:
                 (int1_WB == 1)? {16'b11110_000_000_00000}: // if signal int in WB ->  push flags for interrupt
                 (pushflags == 1)? {8'b11111_000,rdst_call,5'b00000}: // if push flags from decode -> push pc
                 (pushpc == 1)? {8'b11011_000,rdst_call,5'b00000}: //  if push pc from decode ->  jmp Rdst
@@ -122,11 +124,11 @@ assign nextPCOrBranch =
 assign returnOrMux1 = 
     (return == 1'b0) ? nextPCOrBranch :
     (return == 1'b1) ? PCFromPop : 32'bz;
-assign intOrMux2 = 
-    (interupt == 1'b0) ? returnOrMux1 :
-    (interupt == 1'b1) ? 32'b0 : 32'bz;
+// assign intOrMux2 = 
+//     (interupt == 1'b0) ? returnOrMux1 :
+//     (interupt == 1'b1) ? 32'b0 : 32'bz;
 assign rstOrMux3 = 
-    (reset == 1'b0) ? intOrMux2 :
+    (reset == 1'b0) ? returnOrMux1 :
     (reset == 1'b1) ? 32'b00100000 : 32'bz;
 assign PC_of_cpu = PC;
 always @(*)begin 
@@ -142,7 +144,10 @@ always @(*)begin
     Rd = mux_out[7:5];
     Rs = mux_out[10:8];
     opCode = mux_out[15:11];
+   
+ 
 end
+
 
 always @(*)begin CS = ~reset; end 
 always @(posedge clk, negedge enable,posedge reset,return) begin
@@ -151,5 +156,8 @@ always @(posedge clk, negedge enable,posedge reset,return) begin
         PC = rstOrMux3reg;
     end
     // CS = 1; 
+end
+always @(posedge interupt) begin
+    pcBeforeInterrupt_fetch = PC;
 end
 endmodule

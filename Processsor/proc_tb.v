@@ -20,7 +20,7 @@ reset = 1;
 interupt = 0;
 In_Port = 16'h5;
 #1
-reset = 0;
+reset = 0; 
 #149
 In_Port = 16'h19;
 #50

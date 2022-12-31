@@ -156,11 +156,18 @@ module Processor (
     control_signals_execute[16] == 1 ||
     control_signals_execute[13] == 1 ||
     return_CCR == 1)begin CCR = (return_CCR == 1)? WB_data : ccr_out; end end
-    always @(posedge clk,posedge int) begin 
-        if(interrupt == 1)begin interrupt = 0; end
-        else begin interrupt = int; end
+    always @(posedge int,posedge int2_WB) begin 
+        if(int2_WB==1)begin interrupt = 0; end//34an al interrupt y2fl 3nd al +ve edge ali gya
+        else begin  interrupt = int;  end //34an a5od al int lma ygili be 1
+       
     end
-    always @(*) begin PC = PC_wire; end
+
+    reg [31:0] pcBeforeInterrupt;
+    wire [31:0] pcBeforeInterrupt_fetch;
+    always @(*) begin 
+        PC = PC_wire; 
+        pcBeforeInterrupt = pcBeforeInterrupt_fetch; 
+    end
     always @(*) begin SP = SP_wire; end
     always@(posedge reset) begin
         branchResult = 0; 
@@ -170,6 +177,7 @@ module Processor (
         Return = 0;
         CCR = 0;
         Out_Port = 0;
+        interrupt = 0;
     end
     always@(*)begin 
         branchResult = OrCCR & control_signals_execute[0];
@@ -187,7 +195,7 @@ module Processor (
 //############################################### FETCH STAGE ###############################################
 //###########################################################################################################
     assign pc_enable_call = !(control_signals[30] | control_signals[31] | control_signals[32] | control_signals[33] | control_signals[34] 
-                            | interrupt | int1_decode | int1_execute | int1_mem | int1_WB)  | popPc_WB | branchResult | unconditionalJump;
+                             | int1_decode | int1_execute | int1_mem | int1_WB)  | popPc_WB | branchResult | unconditionalJump;
     assign jumpAddress = (int2_WB == 1'b1)? 0:{16'b0,dst};
     FetchStage Fetch(
         clk,
@@ -199,7 +207,7 @@ module Processor (
         control_signals[13], // LDM signal from decode stage used in the LDM case
         Inst_as_Imm_value,   // the current instruction but will be usefull only on LDM case
         reset,    // CPU reset signal
-        interrupt, // CPU interrupt signal
+        interrupt && pc_enable_call && !( branchResult | unconditionalJump), // CPU interrupt signal
         int1_decode, // CPU interrupt signal from decode stage
         int1_execute, // CPU interrupt signal from execute stage
         int1_mem, // CPU interrupt signal from memory stage
@@ -214,12 +222,15 @@ module Processor (
         branchResult, 
         unconditionalJump,
         {16'b0,WB_data}, // The new PC after POP PC
-        PC_wire // PC output from Fetch stage
+        PC_wire, // PC output from Fetch stage
+        pcBeforeInterrupt_fetch, // PC before interrupt
     );
-    reg_fetch_decode reg_fetch_decode(clk,interrupt,
+
+    wire [31:0]pcBeforeInterrupt_decode;
+    reg_fetch_decode reg_fetch_decode(clk,interrupt && pc_enable_call,
         reg_fetch_decode_enable,
-        nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,interrupt,int1_WB,
-        Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode,pc_decode,int1_decode,int2_decode);
+        nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,interrupt && pc_enable_call,int1_WB,pcBeforeInterrupt_fetch,
+        Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode,pc_decode,int1_decode,int2_decode,pcBeforeInterrupt_decode);
 
 //###########################################################################################################
 //############################################## DECODE STAGE ###############################################
@@ -241,8 +252,10 @@ module Processor (
     cu_mux cu_mux(opcode_decode,cu_mux_selector,cu_opcode);
     control_unit CU(cu_opcode,control_signals);
     RegFile registers(WB_signal_if_not_ret,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,reset,WB_address); 
-    reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,int1_decode,int2_decode,
-        Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute,int1_execute,int2_execute);
+    
+    wire [31:0] pcBeforeInterrupt_execeute;
+    reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,int1_decode,int2_decode,pcBeforeInterrupt_decode,
+        Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute,int1_execute,int2_execute,pcBeforeInterrupt_execeute);
         
 
 //############################################## EXECUTE STAGE ###############################################
@@ -266,6 +279,9 @@ module Processor (
         control_signals_execute[23],
         control_signals_execute[13],
         ALU_Result,ccr_out,In_Port);
+
+    wire [31:0] pcBeforeInterrupt_mem;
+
     reg_exec_mem reg_exec_mem(
         // inputs
         clk,ALU_Result,src,dst,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
@@ -278,6 +294,7 @@ module Processor (
         control_signals_execute[33],
         int1_execute,
         int2_execute,
+        pcBeforeInterrupt_execeute,
         // outputs
         ALU_result_mem,Rs_data_mem,Rd_data_mem,Rd_mem,memRead_mem,memWrite_mem,regWrite_mem, 
         push_mem,
@@ -288,7 +305,8 @@ module Processor (
         pushCCR_mem,
         popCCR_mem,
         int1_mem,
-        int2_mem
+        int2_mem,
+        pcBeforeInterrupt_mem
     );
 
 //###########################################################################################################
@@ -299,7 +317,7 @@ module Processor (
         pop_mem,  //pop
         pushPc_mem,
         pushCCR_mem,
-        pc_decode[15:0],    // pc to be writen if push PC occured (CALL instruction)
+        int2_WB ==1?pcBeforeInterrupt_mem[15:0]:pc_decode[15:0],    // pc to be writen if push PC occured (CALL instruction)
         CCR, //flag register
         dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,SP_wire,clk);
     reg_mem_WB reg_mem_WB(clk,dataFromMemory,ALU_result_mem,Rd_mem,memRead_mem,regWrite_mem,shmnt_mem,pop_mem,popPc_mem,popCCR_mem,int1_mem,int2_mem,

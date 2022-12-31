@@ -16,6 +16,7 @@ module reg_exec_mem(
     input popCCR,
     input int1,
     input int2,
+    input [31:0] pcBeforeInterrupt,
 
     output reg [15:0] ALU_result_mem,
     output reg [15:0] Rs_data_mem,
@@ -32,9 +33,11 @@ module reg_exec_mem(
     output reg pushCCR_mem,
     output reg popCCR_mem,
     output reg int1_mem,
-    output reg int2_mem
+    output reg int2_mem,
+    output reg [31:0] pcBeforeInterrupt_mem
+
 );
-    reg [63:0] register;
+    reg [95:0] register;
     initial begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
         register = 0;
     end
@@ -56,6 +59,7 @@ module reg_exec_mem(
         register[61] <= popCCR;
         register[62] <= int1;
         register[63] <= int2;
+        register[95:64] <= pcBeforeInterrupt;
     end
 
     always @ (posedge clk) // read at the +ve edge
@@ -76,6 +80,7 @@ module reg_exec_mem(
         popCCR_mem = register[61];
         int1_mem = register[62];
         int2_mem = register[63];
+        pcBeforeInterrupt_mem = register[95:64];
     end
 
 endmodule
