@@ -79,6 +79,7 @@ add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/unconditionalJump
 add wave -position insertpoint  \
 sim:/ProcessorTb/cpu/branchResult
+
 run
 
 

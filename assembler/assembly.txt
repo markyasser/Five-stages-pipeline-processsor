@@ -4,14 +4,14 @@ ADD R1,R4
 OUT R4
 RTI
 .ORG 20 #this is the instructions code 20H = 32D
-ldm r1,29
+ldm r0,28
 dec r3
-inc r0
-push r1 #M[sp--] = 28
-pop r0 #r0 = 29
+inc r1
+inc r1 #r1 = 2
+jmp r0 #r0 = 29
 call r0 #26
 inc r7 #27
-jmp r1
+jmp r3
 add r0,r1 #r1 = 29 + 2 = 2B #add =29
 ret#2A
 inc r7 #2B
