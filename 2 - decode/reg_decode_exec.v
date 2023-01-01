@@ -1,5 +1,6 @@
 module reg_decode_exec(
     input clk,
+    input reset,
     input [15:0]Imm_value,
     input [4:0]shmnt,
     input [15:0]Rs_data,
@@ -21,7 +22,7 @@ module reg_decode_exec(
     output reg int2_execute
   );
   reg [95:0] register;
-  initial
+  always @(posedge reset)
   begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
     register = 0;
   end

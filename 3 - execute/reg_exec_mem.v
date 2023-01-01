@@ -1,5 +1,6 @@
 module reg_exec_mem(
     input clk,
+    input reset,
     input [15:0] ALU_result,
     input [15:0] Rs_data,
     input [15:0] Rd_data,
@@ -35,7 +36,7 @@ module reg_exec_mem(
     output reg int2_mem
   );
   reg [63:0] register;
-  initial
+  always @(posedge reset)
   begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
     register = 0;
   end

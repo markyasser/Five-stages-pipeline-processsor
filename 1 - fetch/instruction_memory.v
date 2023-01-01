@@ -17,8 +17,8 @@ input clk;
 // instructions area starts from [2^5 and down to 2^20]
 reg [15:0] instMemory [0:(2 ** 20 - 1)];
 initial begin
-	// $readmemb("../assembler/binary.txt", instMemory);
-	$readmemb("D:/CMP/third_Year/first_Semester/computer architecture/project/Five-stages-pipeline-processsor/assembler/binary.txt", instMemory);
+	$readmemb("../assembler/binary.txt", instMemory);
+	// $readmemb("D:/CMP/third_Year/first_Semester/computer architecture/project/Five-stages-pipeline-processsor/assembler/binary.txt", instMemory);
 end
 always @(posedge clk) begin
     // Write

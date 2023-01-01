@@ -1,5 +1,6 @@
 module reg_mem_WB(
     input clk,
+    input reset,
     input [15:0] dataFromMemory,
     input [15:0] MEMWB_ALU_result,
     input [2:0] MEMWB_Rdst_address,
@@ -26,7 +27,8 @@ module reg_mem_WB(
     output reg int2_WB
 );
     reg [43:0] register;
-    initial begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
+    always @(posedge reset)
+    begin   // this solves the problem of the forwading unit not working on first 2 instruction as there is not values inside intermediate registers
         register = 0;
     end
     always @ (negedge clk) 

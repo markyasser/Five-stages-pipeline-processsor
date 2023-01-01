@@ -246,7 +246,7 @@ module Processor (
                PC_wire // PC output from Fetch stage
              );
 
-  reg_fetch_decode reg_fetch_decode(clk,interrupt && pc_enable_call && reg_fetch_decode_enable&& !((opCode == 5'b01101)||(opCode == 5'b11011)||(opCode == 5'b11111)||(opCode == 5'b11110)||(opCode == 5'b11100)||(opCode == 5'b11101)||(opCode == 5'b01111)||(opCode == 5'b01110)),
+  reg_fetch_decode reg_fetch_decode(clk,reset,interrupt && pc_enable_call && reg_fetch_decode_enable&& !((opCode == 5'b01101)||(opCode == 5'b11011)||(opCode == 5'b11111)||(opCode == 5'b11110)||(opCode == 5'b11100)||(opCode == 5'b11101)||(opCode == 5'b01111)||(opCode == 5'b01110)),
                                     reg_fetch_decode_enable,
                                     nextInstructionAddress,opCode,Rs,Rd,SHMNT,PC,interrupt && pc_enable_call && reg_fetch_decode_enable&&!((opCode == 5'b01101)||(opCode == 5'b11011)||(opCode == 5'b11111)||(opCode == 5'b11110)||(opCode == 5'b11100)||(opCode == 5'b11101)||(opCode == 5'b01111)||(opCode == 5'b01110)),int1_WB,
                                     Next_inst_addr_decode,opcode_decode,Rs_decode,Rd_decode,shmnt_decode,pc_decode,int1_decode,int2_decode);
@@ -272,7 +272,7 @@ module Processor (
   control_unit CU(cu_opcode,control_signals);
   RegFile registers(WB_signal_if_not_ret,Rs_decode,Rd_decode,Rs_data,Rd_data,WB_data,clk,reset,WB_address);
 
-  reg_decode_exec reg_dec_exec(clk,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,int1_decode,int2_decode,
+  reg_decode_exec reg_dec_exec(clk,reset,Inst_as_Imm_value,shmnt_decode,Rs_data,Rd_data,Rd_decode,control_signals,Rs_decode,int1_decode,int2_decode,
                                Imm_value_execute,shmnt_execute,Rs_data_execute,Rd_data_execute,Rd_execute,control_signals_execute,Rs_execute,int1_execute,int2_execute);
 
 
@@ -301,7 +301,7 @@ module Processor (
 
   reg_exec_mem reg_exec_mem(
                  // inputs
-                 clk,ALU_Result,src,dst,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
+                 clk,reset,ALU_Result,src,dst,Rd_execute,control_signals_execute[2],control_signals_execute[1],control_signals_execute[3],
                  control_signals_execute[15],
                  control_signals_execute[14],
                  shmnt_execute[1:0],
@@ -335,7 +335,7 @@ module Processor (
                            pc_decode[15:0],
                            CCR, //flag register
                            dataFromMemory,MEMWB_ALU_result,MEMWB_Rdst_address,MEMWB_memRead,MEMWB,SP_wire,clk);
-  reg_mem_WB reg_mem_WB(clk,dataFromMemory,ALU_result_mem,Rd_mem,memRead_mem,regWrite_mem,shmnt_mem,pop_mem,popPc_mem,popCCR_mem,int1_mem,int2_mem,
+  reg_mem_WB reg_mem_WB(clk,reset,dataFromMemory,ALU_result_mem,Rd_mem,memRead_mem,regWrite_mem,shmnt_mem,pop_mem,popPc_mem,popCCR_mem,int1_mem,int2_mem,
                         dataFromMemory_WB,ALU_result_WB,WB_address,MEMWB_memRead_WB,regWrite_WB,shmnt_WB,pop_WB,popPc_WB,popCCR_WB,int1_WB,int2_WB);
 
   //###########################################################################################################
