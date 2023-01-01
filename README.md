@@ -2,13 +2,13 @@
 
 ### Performance
 
-##### All instructions are executed in 5 cycles except :
+##### All instructions are executed in 1 cycles except for :
 
-- _LDM_: takes 1 additional cycle (LDM, stall)
-- _CALL_ : takes 4 additional cycle (PUSH flags, PUSH pc, JMP, stall, stall)
-- _RET_: takes 3 additional cycle (POP PC, POP Flags, stall, stall)
-- _RTI_: takes 3 additional cycle (POP PC, POP Flags, stall, stall)
-- _INT_: takes 8 additional cycle (4 stalls,POP PC, POP Flags, stall, stall)
+- _LDM_: takes 6 cycles (LDM, stall)
+- _CALL_ : takes 9 cycles (PUSH flags, PUSH pc, JMP, stall, stall)
+- _RET_: takes 8 cycles (POP PC, POP Flags, stall, stall)
+- _RTI_: takes 8 cycles (POP PC, POP Flags, stall, stall)
+- _INT_: takes 12 cycles (4 stalls,PUSH PC, PUSH Flags, stall, stall)
 
 ### Handling Hazards
 
@@ -30,6 +30,7 @@
 - Open command prompt
 - write `python3 assemblerGui.py`
 - now you can write you Assembly code
+- press CTRL + s after writing your code
 
 ### Instruction set
 
