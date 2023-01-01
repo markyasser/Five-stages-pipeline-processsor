@@ -39,19 +39,19 @@ module control_unit(opcode,control_signals);
     PUSH_FLAGS = control_signals[31]
     POP_PC = control_signals[32]
     POP_FLAGS = control_signals[33]
-    JMP_CALL_RET = control_signals[34]
+    JMP_CAll = control_signals[34]
     */
 
     assign control_signals = 
                         //    32|  28|  24|  20|  16|  12|   8|   4|   0| 
     (opcode == 5'b00000)? 35'b00_0000_0000_0000_0000_0000_0000_0000_0000:                  // NOP
-    (opcode == 5'b01111)? 35'b001_0000_0000_0000_0000_0100_0000_0000_1100:                  // RTI : rti 
+    (opcode == 5'b01111)? 35'b001_0000_0000_0000_0000_0100_0000_0000_1100:                  // RTI : rti -> pop pc
     // (opcode == 5'b01110)? 35'b00_0000_0000_0000_0000_0000_0000_0010_0000:                  // RET : ret
-    (opcode == 5'b01110)? 35'b001_0000_0000_0000_0000_0100_0000_0000_1100:                  // RET : ret
+    (opcode == 5'b01110)? 35'b001_0000_0000_0000_0000_0100_0000_0000_1100:                  // RET : ret ->pop Pc
     // (opcode == 5'b01101)? 35'b00_0000_0000_0000_0000_0000_0000_0100_0000:                  // CALL : call 
     (opcode == 5'b01101)? 35'b00_1000_0000_0000_0000_1000_0000_0000_0010:                  // CALL : call -> push flags
 
-    (opcode == 5'b11011)? 35'b100_0000_0000_0000_0000_0000_0000_1000_0001:                  // JMP_CALL_RET : jmp + branch + JMP_CALL_RET
+    (opcode == 5'b11011)? 35'b100_0000_0000_0000_0000_0000_0000_1000_0001:                  // JMP_CAll : jmp + branch + JMP_CAll
     (opcode == 5'b01000)? 35'b00_0000_0000_0000_0000_0000_0000_1000_0001:                  // JMP : jmp + branch
     (opcode == 5'b01001)? 35'b00_0000_0000_0000_0000_0000_0001_0000_0001:                  // JC : jc + branch 
     (opcode == 5'b01010)? 35'b00_0000_0000_0000_0000_0000_0010_0000_0001:                  // JN : jn + branch 
