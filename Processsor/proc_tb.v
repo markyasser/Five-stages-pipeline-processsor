@@ -27,9 +27,9 @@ module ProcessorTb();
     #50
      In_Port = 16'hFFFFFFFF;
     #100
-     interupt = 1;
-    #20
-     interupt = 0;
+    //  interupt = 1;
+    // #20
+    //  interupt = 0;
     // #700
     //  interupt = 1;
     // #20

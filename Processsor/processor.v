@@ -161,6 +161,10 @@ module Processor (
     begin
       CCR = (return_CCR == 1)? WB_data : ccr_out;
     end
+  else if(control_signals_execute[29] == 1 ||
+        control_signals_execute[28] == 1) begin
+        CCR[2] = ccr_out[2];
+   end
   end
   always @(posedge int,posedge int1_decode)
   begin
@@ -283,7 +287,10 @@ module Processor (
   mux21 mux2x1(Rs_data_execute,Imm_value_execute,control_signals_execute[13],src_from_mux);
   mux32 muxForwarding_Src(src_from_mux,ALU_result_mem,WB_data,selectorFU_src,src);
   mux32 muxForwarding_Dst(Rd_data_execute,ALU_result_mem,WB_data,selectorFU_dst,dst);
-  ALU alu(src,dst,shmnt_execute,
+  ALU alu(src,dst,
+          control_signals_execute[29],
+          control_signals_execute[28],
+          shmnt_execute,
           control_signals_execute[22],
           control_signals_execute[21],
           control_signals_execute[27],

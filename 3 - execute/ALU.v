@@ -1,8 +1,8 @@
 // ALU module
-module ALU(Src,Dst,SHMNT,ALU_MOV,ALU_ADD,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND,ALU_OR,ALU_SHL,ALU_SHR,ALU_IN,ALU_LDM,ALU_Result,CCR,IN_port);
+module ALU(Src,Dst,setc,clrc,SHMNT,ALU_MOV,ALU_ADD,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND,ALU_OR,ALU_SHL,ALU_SHR,ALU_IN,ALU_LDM,ALU_Result,CCR,IN_port);
     input [15:0] Src,Dst,IN_port;  // ALU 16-bit Inputs
     input [4:0] SHMNT;
-    input ALU_ADD,ALU_MOV,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND,ALU_OR,ALU_IN,ALU_SHL,ALU_SHR,ALU_LDM; // ALU Selection
+    input ALU_ADD,ALU_MOV,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND,ALU_OR,ALU_IN,ALU_SHL,ALU_SHR,ALU_LDM,setc,clrc; // ALU Selection
     // input clk;
     output reg [15:0] ALU_Result; // ALU 16-bit Output
     output reg[2:0] CCR; // flags register
@@ -60,7 +60,7 @@ module ALU(Src,Dst,SHMNT,ALU_MOV,ALU_ADD,ALU_NOT,ALU_INC,ALU_DEC,ALU_SUB,ALU_AND
     // Assigning Flags
     assign ZeroFlag = (ALU_Result == 0) ? 1 : 0;
     assign NegativeFlag = (ALU_Result[15] == 1) ? 1 : 0;
-    assign CarryFlag = (ALU_ADD == 1 && tmp[16] == 1) ? 1 : 0;
+    assign CarryFlag = clrc? 0 :((ALU_ADD == 1 && tmp[16] == 1) | setc) ? 1 : 0;
 
 
     // Flag Register
