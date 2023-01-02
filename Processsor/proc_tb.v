@@ -19,22 +19,27 @@ module ProcessorTb();
     clk = 1;
     reset = 1;
     interupt = 0;
-    In_Port = 16'h5;
     #1
      reset = 0;
-    #149
+    // In_Port = 16'h5;
+
+    //test case : 1 operand
+    // #99
+    //  In_Port = 16'h19;
+    // #49
+    //  In_Port = 16'hF;
+    // #49
+    //  In_Port = 16'hFFFFF320;
+    //test case: 2 operands
+    #99
+     In_Port = 16'h5;
+    #49
      In_Port = 16'h19;
-    #50
-     In_Port = 16'hFFFFFFFF;
-    #100
-     interupt = 1;
-    #120
-     interupt = 0;
-    // #700
-    //  interupt = 1;
-    // #20
-    //  interupt = 0;
-    In_Port = 16'hFFFFF320;
+    #49
+     In_Port = 16'hFFFF;
+    #49
+     In_Port = 16'hF320;
+
     // make interrupt in cycle 6
     // #30
     // interupt = 1;
