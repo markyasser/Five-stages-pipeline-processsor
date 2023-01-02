@@ -13,7 +13,7 @@ module ProcessorTb();
               Out_Port
             );
 
-
+  parameter clock_period = 50;
   initial
   begin
     clk = 1;
@@ -22,39 +22,16 @@ module ProcessorTb();
     In_Port = 16'h5;
     #1
      reset = 0;
-    #149
+    #49
+    #(2*clock_period)
      In_Port = 16'h19;
-    #50
+    #(clock_period)
      In_Port = 16'hFFFFFFFF;
-    #100
+    #(2*clock_period)
      interupt = 1;
-    #120
+    #(3*clock_period)
      interupt = 0;
-    // #700
-    //  interupt = 1;
-    // #20
-    //  interupt = 0;
     In_Port = 16'hFFFFF320;
-    // make interrupt in cycle 6
-    // #30
-    // interupt = 1;
-    // #20
-    // interupt = 0;
-
-
-    // #(10*50)
-    // // make interrupt in cycle 17
-    // interupt = 1;
-    // #50
-    // interupt = 0;
-
-
-
-    // #149
-    // reset = 1;
-    // #1
-    // reset = 0;
-
   end
 
   always #25 clk =~ clk;
