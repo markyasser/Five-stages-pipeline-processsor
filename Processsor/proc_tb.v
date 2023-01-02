@@ -23,7 +23,7 @@ module ProcessorTb();
      reset = 0;
     // In_Port = 16'h5;
 
-    //test case : 1 operand
+    // test case : memory
     // #99
     //  In_Port = 16'h19;
     // #49
@@ -31,28 +31,31 @@ module ProcessorTb();
     // #49
     //  In_Port = 16'hFFFFF320;
     //test case: 2 operands
-    // #99
-    //  In_Port = 16'h5;
-    // #49
-    //  In_Port = 16'h19;
-    // #49
-    //  In_Port = 16'hFFFF;
-    // #49
-    //  In_Port = 16'hF320;
-
+    #99
+     In_Port = 16'h5;
+    #49
+     In_Port = 16'h19;
+    #49
+     In_Port = 16'hFFFF;
+    #49
+     In_Port = 16'hF320;
+    #199
+     interupt = 1;
+    #49
+     interupt = 0;
     //test case : branch and interrupt
-    #(200*clock_period)
-     In_Port = 16'h300;
-    #49
-     In_Port = 16'h40;
-    #49
-     In_Port = 16'h500;
-    #49
-     In_Port = 16'h100;
-    #49
-     In_Port = 16'h07fe;
-    #650
-     In_Port = 16'h700;
+    // #(495*clock_period)
+    //  In_Port = 16'h300;
+    // #49
+    //  In_Port = 16'h40;
+    // #49
+    //  In_Port = 16'h500;
+    // #49
+    //  In_Port = 16'h100;
+    // #49
+    //  In_Port = 16'h07fe;
+    // #49
+    //  In_Port = 16'h700;
     // interupt = 1;
     // #49
     //  interupt = 0;
@@ -76,16 +79,16 @@ module ProcessorTb();
     // #1
     // reset = 0;
 
-    #49
-     #(2*clock_period)
-     In_Port = 16'h19;
-    #(clock_period)
-     In_Port = 16'hFFFFFFFF;
-    #(2*clock_period)
-     interupt = 1;
-    #(3*clock_period)
-     interupt = 0;
-    In_Port = 16'hFFFFF320;
+    // #49
+    //  #(2*clock_period)
+    //  In_Port = 16'h19;
+    // #(clock_period)
+    //  In_Port = 16'hFFFFFFFF;
+    // #(2*clock_period)
+    //  interupt = 1;
+    // #(3*clock_period)
+    //  interupt = 0;
+    // In_Port = 16'hFFFFF320;
   end
 
   always #25 clk =~ clk;
