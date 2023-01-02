@@ -167,6 +167,7 @@ def run(event=None):
             continue
         line = re.sub('\n', '', line)
         line = re.sub('\t', ' ', line)
+        line = re.sub('\xa0', ' ', line)
         try:
             print(assemblyToBinary(line.lower()))
         except KeyError as e:
