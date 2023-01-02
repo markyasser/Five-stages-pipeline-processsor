@@ -31,15 +31,31 @@ module ProcessorTb();
     // #49
     //  In_Port = 16'hFFFFF320;
     //test case: 2 operands
-    #99
-     In_Port = 16'h5;
-    #49
-     In_Port = 16'h19;
-    #49
-     In_Port = 16'hFFFF;
-    #49
-     In_Port = 16'hF320;
+    // #99
+    //  In_Port = 16'h5;
+    // #49
+    //  In_Port = 16'h19;
+    // #49
+    //  In_Port = 16'hFFFF;
+    // #49
+    //  In_Port = 16'hF320;
 
+    //test case : branch and interrupt
+    #(200*clock_period)
+     In_Port = 16'h300;
+    #49
+     In_Port = 16'h40;
+    #49
+     In_Port = 16'h500;
+    #49
+     In_Port = 16'h100;
+    #49
+     In_Port = 16'h07fe;
+    #650
+     In_Port = 16'h700;
+    // interupt = 1;
+    // #49
+    //  interupt = 0;
     // make interrupt in cycle 6
     // #30
     // interupt = 1;
@@ -61,7 +77,7 @@ module ProcessorTb();
     // reset = 0;
 
     #49
-    #(2*clock_period)
+     #(2*clock_period)
      In_Port = 16'h19;
     #(clock_period)
      In_Port = 16'hFFFFFFFF;
