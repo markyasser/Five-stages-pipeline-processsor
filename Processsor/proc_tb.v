@@ -36,3 +36,4 @@ module ProcessorTb();
 
   always #25 clk =~ clk;
 endmodule
+
