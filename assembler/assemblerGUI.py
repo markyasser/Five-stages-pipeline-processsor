@@ -48,6 +48,8 @@ regAddressMap = {
 instructionMemory = ["0000000000000000"] * (2 ** 20)
 nextInstructionAddress = 2 ** 5
 # print(instructionMemory)
+
+
 def writeHexToFile(file, binary):
     file.write(f'{int(binary, 2):X}'+"\n")
 
@@ -101,7 +103,8 @@ def assemblyToBinary(line):
                 imm = f'{int(instructionArray[2], 16):016b}'
                 # writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
                 # writeBinaryToFile(f_out, imm)
-                instructionMemory[nextInstructionAddress] = opcode+"000"+rd+shmnt
+                instructionMemory[nextInstructionAddress] = opcode + \
+                    "000"+rd+shmnt
                 nextInstructionAddress = nextInstructionAddress + 1
                 instructionMemory[nextInstructionAddress] = imm
                 nextInstructionAddress = nextInstructionAddress + 1
@@ -110,7 +113,8 @@ def assemblyToBinary(line):
                 rd = regAddressMap[instructionArray[1].upper()]
                 shmnt = f'{int(instructionArray[2], 16):05b}'
                 # writeBinaryToFile(f_out, opcode+"000"+rd+shmnt)
-                instructionMemory[nextInstructionAddress] = opcode+"000"+rd+shmnt
+                instructionMemory[nextInstructionAddress] = opcode + \
+                    "000"+rd+shmnt
                 nextInstructionAddress = nextInstructionAddress + 1
             else:
                 opcode = opcodeMap[instructionArray[0].upper()]
@@ -143,10 +147,12 @@ def saveAssemblyFile():
     f_out.write(asmdata)
     f_out.close()
 
+
 def saveMemory(file):
     global instructionMemory
     for instruction in instructionMemory:
         file.write(instruction+"\n")
+
 
 def run(event=None):
     global instructionMemory
@@ -160,10 +166,12 @@ def run(event=None):
         if line[0] == "#" or line[0] == "" or line[0] == "\n":
             continue
         line = re.sub('\n', '', line)
+        line = re.sub('\t', ' ', line)
         try:
             print(assemblyToBinary(line.lower()))
         except KeyError as e:
             messagebox.showerror("Error", f"Error in {e}")
+            break
     saveMemory(f_out)
     f.close()
     f_out.close()
